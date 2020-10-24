@@ -19,8 +19,8 @@
 type Select<T, R extends keyof T> = Partial<T> & Pick<T, R>;
 
 /**
- * Define Movie schema as used in the app, i.e. the interesting bits from a
- * possibly richer schema.
+ * Define a "filled" Movie schema as used in the app, i.e. the interesting bits 
+ * from a possibly richer schema.
  */
 export interface Movie {
   Title: string;
@@ -49,7 +49,7 @@ const MovieSearchDemo: MovieSearchResult = {
 };
 
 const MovieDetailsDemo: MovieDetails = Object.assign({
-  Plot : 'Two sisters battle the Miami mafia in penguins suits.',
+  Plot : 'Two sisters battle the Miami mafia in penguin suits.',
   Actors : 'Sonia Crockit, Michelle Vedette',
 }, MovieSearchDemo);
 
