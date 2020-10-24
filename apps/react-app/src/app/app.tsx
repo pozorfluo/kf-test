@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   //   Button,
   //   CircularProgress,
+  Icon,
   IconButton,
   LinearProgress,
   Input,
@@ -13,10 +14,14 @@ import {
   GridListTile,
   GridListTileBar,
 } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
+
+import {MoviePoster} from '../components';
+import { MoviePopUp } from '../features';
+// import Icon from '@material-ui/core/Icon';
 
 import placeholderSearchResults from './placeholderSearchResults';
-import phMissingPoster from './ph_missing-poster.png';
+import placeholderDetails from './placeholderDetails';
+
 
 import './app.scss';
 
@@ -35,25 +40,11 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       color: '#FFFFFFAF',
     },
-    poster: {
-        opacity: '85%',
-        '&:hover': {
-            opacity: '100%',
-        },
-        '&:focus': {
-            opacity: '100%',
-        },
-    }
   })
 );
 
 export const App = () => {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./app.scss file.
-   */
-
+  const [popUp, setPopup] = useState(false);
   const classes = useStyles();
 
   return (
@@ -81,29 +72,26 @@ export const App = () => {
       <br />
       <LinearProgress />
 
+      <MoviePopUp
+        open={popUp}
+        loading={false}
+        movieDetails={placeholderDetails}
+        onClose={() => setPopup(false)}
+      />
+
       <div className={classes.root}>
         <GridList cellHeight={450} className={classes.gridlist}>
           {placeholderSearchResults.map((movie) => (
             <GridListTile key={movie.imdbID}>
-              <img
-                src={
-                  /** @todo Consider a less crude way to check if a url, valid
-                   *        or not, is present in a returned result.
-                   */
-                  movie.Poster.substring(0, 4) === 'http'
-                    ? movie.Poster
-                    : phMissingPoster
-                }
-                alt={movie.Title}
-                className={classes.poster}
-              />
+              <MoviePoster url={movie.Poster} title={movie.Title} />
               <GridListTileBar
                 title={movie.Title}
                 subtitle={<span>{movie.Year}</span>}
                 actionIcon={
                   <IconButton
-                    aria-label={`synonpsis for ${movie.Title}`}
+                    aria-label={`synopsis of ${movie.Title}`}
                     className={classes.icon}
+                    onClick={() => setPopup(true)}
                   >
                     <Icon>zoom_in</Icon>
                   </IconButton>
