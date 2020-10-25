@@ -22,7 +22,7 @@ describe('maybePlural', () => {
     }
   );
   //----------------------------------------------------------------------------
-  it('returns given suffix as irregular plural given a count different from 1 when irregular is true', (count) => {
+  it('returns given suffix as irregular plural given a count different from 1 when irregular is true', () => {
     expect(maybePlural(2, 'knife', 'knives', true)).toBe('2 knives');
   });
 });
