@@ -1,0 +1,1 @@
+export { maybePlural } from './maybePlural';

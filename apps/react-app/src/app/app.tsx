@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import {
+  Container,
   Icon,
   IconButton,
   LinearProgress,
@@ -11,12 +12,14 @@ import {
   GridList,
   GridListTile,
   GridListTileBar,
+  ListSubheader,
 } from '@material-ui/core';
 
 import '../web-components/img-spinner';
 import { MoviePoster } from '../components';
 import { MoviePopUp } from '../features';
 import { MovieDetails } from '../api/Omdb';
+import { maybePlural } from '../utils';
 import placeholderSearchResults from './placeholderSearchResults';
 import placeholderDetails from './placeholderDetails';
 
@@ -46,7 +49,7 @@ export const App = () => {
   const classes = useStyles();
 
   return (
-    <div className="app">
+    <Container className="app" maxWidth="md">
       {/* @todo Extract to features/MovieSearchBar. */}
       <FormControl style={{ width: '100%' }}>
         <InputLabel htmlFor="search-field">
@@ -81,7 +84,10 @@ export const App = () => {
 
       {/* @todo Extract to features/MovieSearchResults. */}
       <div className={classes.root}>
-        <GridList cellHeight={450} className={classes.gridlist}>
+        <GridList cellHeight="auto" cols={1} className={classes.gridlist}>
+          <ListSubheader component="div">
+            found {maybePlural(placeholderSearchResults.length, 'movie')}  !
+          </ListSubheader>
           {placeholderSearchResults.map((movie) => (
             <GridListTile key={movie.imdbID}>
               <MoviePoster url={movie.Poster} title={movie.Title} />
@@ -105,9 +111,7 @@ export const App = () => {
           ))}
         </GridList>
       </div>
-
-
-    </div>
+    </Container>
   );
 };
 
