@@ -23,6 +23,9 @@ export const MoviePopUp = ({
   movieDetails,
   onClose,
 }: MovieDetailsProps) => {
+  /**
+   * @todo Talk to machine/store directly once they're plugged in.
+   * */
   const content = movieDetails ? (
     <>
       <DialogTitle>
@@ -40,7 +43,9 @@ export const MoviePopUp = ({
   return (
     <Dialog
       onClose={onClose}
-    //   aria-label={`synopsis of ${movieDetails.Title}`}
+      aria-label={
+        movieDetails ? `synopsis of ${movieDetails.Title}` : 'loading content'
+      }
       open={open}
     >
       {content}

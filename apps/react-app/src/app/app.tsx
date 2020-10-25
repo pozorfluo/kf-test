@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  //   Button,
-  //   CircularProgress,
   Icon,
   IconButton,
   LinearProgress,
@@ -49,6 +47,7 @@ export const App = () => {
 
   return (
     <div className="app">
+      {/* @todo Extract to features/MovieSearchBar. */}
       <FormControl style={{ width: '100%' }}>
         <InputLabel htmlFor="search-field">
           Search for a movie by title
@@ -68,16 +67,19 @@ export const App = () => {
           fullWidth
         ></Input>
       </FormControl>
-
       <br />
       <LinearProgress />
 
       <MoviePopUp
-          open={popUp}
-          movieDetails={phDetails ? phDetails : undefined}
-          onClose={() => {setPopup(false); setPhDetails(undefined)}}
-        />
+        open={popUp}
+        movieDetails={phDetails ? phDetails : undefined}
+        onClose={() => {
+          setPopup(false);
+          setPhDetails(undefined);
+        }}
+      />
 
+      {/* @todo Extract to features/MovieSearchResults. */}
       <div className={classes.root}>
         <GridList cellHeight={450} className={classes.gridlist}>
           {placeholderSearchResults.map((movie) => (
@@ -103,14 +105,8 @@ export const App = () => {
           ))}
         </GridList>
       </div>
-      {/* <CircularProgress />
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<Icon>search</Icon>}
-      >
-        Comme un aigle
-      </Button> */}
+
+
     </div>
   );
 };

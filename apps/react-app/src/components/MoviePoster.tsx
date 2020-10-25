@@ -43,6 +43,7 @@ export const MoviePoster = ({
       height={height}
       width={width}
       alt={title}
+      /** @see {@link ../web-components/wc-class-fix.d.ts}  */
       class={classes.poster}
     />
   );
