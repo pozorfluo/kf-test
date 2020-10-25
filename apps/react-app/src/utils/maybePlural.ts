@@ -2,8 +2,9 @@ export const maybePlural = (
   count: number,
   word: string,
   suffix = 's',
-  alt = false
+  irregular = false
 ): string => {
-  const suffixedOrAlt = count === 1 ? word : alt ? suffix : `${word}${suffix}`;
+  const suffixedOrAlt =
+    count === 1 ? word : irregular ? suffix : `${word}${suffix}`;
   return `${count} ${suffixedOrAlt}`;
 };
