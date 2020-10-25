@@ -10,9 +10,9 @@ describe('App', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should have a greeting as the title', () => {
+  it('should have instructions about the search bar', () => {
     const { getByText } = render(<App />);
 
-    expect(getByText('Welcome to react-app!')).toBeTruthy();
+    expect(getByText('Search for a movie by title')).toBeTruthy();
   });
 });
