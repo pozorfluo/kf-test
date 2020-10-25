@@ -15,13 +15,12 @@ import {
   GridListTileBar,
 } from '@material-ui/core';
 
-import {MoviePoster} from '../components';
+import '../web-components/img-spinner';
+import { MoviePoster } from '../components';
 import { MoviePopUp } from '../features';
-// import Icon from '@material-ui/core/Icon';
-
+import { MovieDetails } from '../api/Omdb';
 import placeholderSearchResults from './placeholderSearchResults';
 import placeholderDetails from './placeholderDetails';
-
 
 import './app.scss';
 
@@ -45,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const App = () => {
   const [popUp, setPopup] = useState(false);
+  const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
   const classes = useStyles();
 
   return (
@@ -73,11 +73,10 @@ export const App = () => {
       <LinearProgress />
 
       <MoviePopUp
-        open={popUp}
-        loading={false}
-        movieDetails={placeholderDetails}
-        onClose={() => setPopup(false)}
-      />
+          open={popUp}
+          movieDetails={phDetails ? phDetails : undefined}
+          onClose={() => {setPopup(false); setPhDetails(undefined)}}
+        />
 
       <div className={classes.root}>
         <GridList cellHeight={450} className={classes.gridlist}>
@@ -91,7 +90,10 @@ export const App = () => {
                   <IconButton
                     aria-label={`synopsis of ${movie.Title}`}
                     className={classes.icon}
-                    onClick={() => setPopup(true)}
+                    onClick={() => {
+                      setPopup(true);
+                      setTimeout(() => setPhDetails(placeholderDetails), 2000);
+                    }}
                   >
                     <Icon>zoom_in</Icon>
                   </IconButton>

@@ -1,13 +1,3 @@
-// import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     backdrop: {
-//       zIndex: theme.zIndex.drawer + 1,
-//       color: '#000000',
-//     },
-//   })
-// );
 import React from 'react';
 import {
   IconButton,
@@ -16,6 +6,7 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
+  CircularProgress,
 } from '@material-ui/core';
 
 import { MovieDetails } from '../api/Omdb';
@@ -23,19 +14,17 @@ import { MoviePoster } from '../components';
 
 export interface MovieDetailsProps {
   open: boolean;
-  loading: boolean;
-  movieDetails: MovieDetails;
+  movieDetails?: MovieDetails;
   onClose: () => void;
 }
 
-export const MoviePopUp = (props: MovieDetailsProps) => {
-  const { open, movieDetails, onClose } = props;
-  return (
-    <Dialog
-      onClose={onClose}
-      aria-label={`synopsis of ${movieDetails.Title}`}
-      open={open}
-    >
+export const MoviePopUp = ({
+  open,
+  movieDetails,
+  onClose,
+}: MovieDetailsProps) => {
+  const content = movieDetails ? (
+    <>
       <DialogTitle>
         {movieDetails.Title} ({movieDetails.Year})
       </DialogTitle>
@@ -44,6 +33,17 @@ export const MoviePopUp = (props: MovieDetailsProps) => {
         <p>{movieDetails.Plot}</p>
         <p>{movieDetails.Actors}</p>
       </DialogContent>
+    </>
+  ) : (
+    <CircularProgress />
+  );
+  return (
+    <Dialog
+      onClose={onClose}
+    //   aria-label={`synopsis of ${movieDetails.Title}`}
+      open={open}
+    >
+      {content}
       <DialogActions>
         <IconButton aria-label="close" onClick={onClose}>
           <Icon>close</Icon>

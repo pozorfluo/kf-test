@@ -18,24 +18,32 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface MoviePosterProps {
-    title : string;
-    url : string; 
+  title: string;
+  url: string;
+  height?: number;
+  width?: number;
 }
 
-export const MoviePoster = (props) => {
-    const { title, url } = props;
-    const classes = useStyles();
-
+export const MoviePoster = ({
+  title,
+  url,
+  height = 450,
+  width = 300,
+}: MoviePosterProps) => {
+  const classes = useStyles();
   return (
     <img
+      is="img-spinner"
       src={
         /** @todo Consider a less crude way to check if any url, valid
          *        or not, is present in a result returned from ombd api.
          */
         url.substring(0, 4) === 'http' ? url : phMissingPoster
       }
+      height={height}
+      width={width}
       alt={title}
-      className={classes.poster}
+      class={classes.poster}
     />
   );
 };
