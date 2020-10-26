@@ -10,18 +10,19 @@ import {
 import { getAPIKey } from '../utils';
 
 import { Container } from '@material-ui/core';
-import { MovieSearchBar, MovieSearchResults } from '../features';
+import { MovieSearchBar, MovieList } from '../features';
+import { MovieSearchResult } from '../api/OmdbAPI'; 
 import '../web-components/img-spinner';
 
 import './app.scss';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const { current, searchFor, searchResults, imdbID } = useSelector(
+  const { current, searchResults } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
 
-  /** @note Part of a workaround to avoid commiting API keys to the repo. */
+  /** Part of a workaround to avoid commiting API keys to the repo. */
   const APIKey = getAPIKey();
 
   const setMovieSearch = (searchFor: string) => {
@@ -29,12 +30,14 @@ export const App = () => {
     console.log(`Search for "${searchFor}" fired !`);
   };
 
-  const showMovies = () => {
-    dispatch(setMovieSearchContext({ current: 'listing' }));
+  const showMovies = (movies: MovieSearchResult[]) => {
+    dispatch(
+      setMovieSearchContext({ current: 'listing', searchResults: movies })
+    );
   };
 
   // const content = current === 'listing'
-  //     ? (<MovieSearchResults />)
+  //     ? (<MovieList />)
   //     :
 
   return (
@@ -45,7 +48,7 @@ export const App = () => {
         APIKey={APIKey}
       />
       {/* {content} */}
-      {current === 'listing' && <MovieSearchResults />}
+      {current === 'listing' && <MovieList movies={searchResults}/>}
     </Container>
   );
 };

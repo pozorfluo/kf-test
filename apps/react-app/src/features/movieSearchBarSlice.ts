@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { MovieSearchResult } from '../api/OmdbAPI'; // , MovieDetails
-import {Select} from '../utils';
+import { Select } from '../utils';
 
 /**
  * @note Having searchFor nullable will require a guard on SEARCH/searchMovies.
@@ -32,18 +32,21 @@ const movieSearchBarSlice = createSlice({
     searchMovies(state, action: PayloadAction<CurrentSearch>) {
       const { searchFor } = action.payload;
       state.searchFor = searchFor;
+      state.current = 'loading';
     },
     setMovieSearchContext(state, action: PayloadAction<MovieSearchPayload>) {
-      const { current, searchResults = [] } = action.payload;
+      const { current, searchResults = null } = action.payload;
       state.current = current;
-      state.searchResults = searchResults;
+      if (searchResults) {
+        state.searchResults = searchResults;
+      }
     },
   },
 });
 
 export const {
   searchMovies,
-  setMovieSearchContext
+  setMovieSearchContext,
 } = movieSearchBarSlice.actions;
 
 export default movieSearchBarSlice.reducer;

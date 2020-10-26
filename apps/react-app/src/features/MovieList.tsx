@@ -13,12 +13,10 @@ import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
 import { MovieDetails } from '../api/OmdbAPI';
 import { MoviePopUp } from './MoviePopUp';
-import placeholderSearchResults from './placeholderSearchResults';
+import { MovieSearchResult } from '../api/OmdbAPI';
+// import placeholderSearchResults from './placeholderSearchResults';
 import placeholderDetails from './placeholderDetails';
 
-// export interface MovieSearchResultsProps {
-
-// }
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,9 +36,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-//{movies} : MovieSearchResultsProps
+export interface MovieSearchResultsProps {
+    movies : MovieSearchResult[];
+}
 
-export const MovieSearchResults = () => {
+export const MovieList = ({movies} : MovieSearchResultsProps) => {
   const [popUp, setPopup] = useState(false);
   const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
   const classes = useStyles();
@@ -49,9 +49,9 @@ export const MovieSearchResults = () => {
     <div className={classes.root}>
       <GridList cellHeight="auto" cols={1} className={classes.gridlist}>
         <ListSubheader component="div">
-          found {maybePlural(placeholderSearchResults.length, 'movie')} !
+          found {maybePlural(movies.length, 'movie')} !
         </ListSubheader>
-        {placeholderSearchResults.map((movie) => (
+        {movies.map((movie) => (
           <GridListTile key={movie.imdbID}>
             <MoviePoster url={movie.Poster} title={movie.Title} />
             <GridListTileBar

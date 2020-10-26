@@ -4,6 +4,10 @@
  */
 import {Select} from '../utils';
 
+import placeholderSearchResults from './placeholderSearchResults';
+
+
+
 /**
  * Define a "filled" Movie schema as used in the app, i.e. the interesting bits 
  * from a possibly richer schema.
@@ -25,6 +29,28 @@ export type MovieSearchResult = Select<
 >;
 
 export type MovieDetails = Select<Movie, 'Plot' | 'Actors'> & MovieSearchResult;
+
+
+// function placeholderGetMovies() : Promise<MovieSearchResult[]> {
+//   console.log('fake fetching ...');
+// return new Promise(function (resolve, reject) {
+//   setTimeout(function () {
+//     if (Math.round(Math.random())) {
+//       resolve(placeholderSearchResults);
+//     } else {
+//       reject('fake loading error !');
+//     }
+//   }, 1000);
+// });
+// }
+
+// class Omdb {
+//   static _baseURL : 
+//   _APIKey : string;
+//   constructor(APIkey : string) {
+//     this._APIKey = APIkey;
+//   }
+// }
 
 // const MovieSearchDemo: MovieSearchResult = {
 //   Title: 'yeah',

@@ -1,4 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/rootReducer';
+
 import {
   Icon,
   IconButton,
@@ -9,11 +12,28 @@ import {
   FormControl,
 } from '@material-ui/core';
 
+import { MovieSearchResult } from '../api/OmdbAPI';
+import placeholderSearchResults from './placeholderSearchResults';
+
+
+function placeholderGetMovies() : Promise<MovieSearchResult[]> {
+    console.log('fake fetching ...');
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      if (Math.round(Math.random())) {
+        resolve(placeholderSearchResults);
+      } else {
+        reject('fake loading error !');
+      }
+    }, 1000);
+  });
+}
+
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
-  showMovies: () => void;
-  /** @note Part of a workaround to avoid commiting API keys to the repo. */
-  APIKey : string;
+  showMovies: (movies: MovieSearchResult[]) => void;
+  /** Part of a workaround to avoid commiting API keys to the repo. */
+  APIKey: string;
 }
 
 export const MovieSearchBar = ({
@@ -22,10 +42,14 @@ export const MovieSearchBar = ({
   APIKey,
 }: MovieSearchBarProps) => {
   const [currentSearch, setCurrentSearch] = useState('');
+  const { current, searchFor } = useSelector(
+    (state: RootState) => state.movieSearchBar
+  );
+//   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
 
   const onSearchChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentSearch(e.target.value);
-    console.log("MovieSearchBar input changed.")
+    console.log('MovieSearchBar input changed.');
   };
 
   const onClear = () => {
@@ -36,10 +60,31 @@ export const MovieSearchBar = ({
     setMovieSearch(currentSearch);
   };
 
+  useEffect(() => {
+    async function fetchMovies() {
+      try {
+        const searchResults = await placeholderGetMovies();
+        // setMovies(searchResults);
+        showMovies(searchResults);
+      } catch (err) {
+        console.error(err);
+        /** @todo Fire SEARCH_FAILURE here */
+      }
+      //   finally {
+
+      //   }
+    }
+    // if ((current === 'idle' || current === 'failure') && searchFor) {
+    if (current === 'loading' && searchFor) {
+      fetchMovies();
+      console.log('Loading ...');
+    }
+  }, [searchFor, showMovies, current]);
+
   return (
     <FormControl style={{ width: '100%' }}>
       <InputLabel htmlFor="search-field">
-        Search for a movie by title ({APIKey})
+        Search for a movie by title ({APIKey}/{current}/{searchFor})
       </InputLabel>
       <Input
         id="search-field"
@@ -54,7 +99,7 @@ export const MovieSearchBar = ({
             </IconButton>
           </InputAdornment>
         }
-        /** @todo Debounce onChange event. */
+        /** @todo Debounce onChange event if you let it trigger a search. */
         onChange={onSearchChanged}
         fullWidth
         autoFocus
