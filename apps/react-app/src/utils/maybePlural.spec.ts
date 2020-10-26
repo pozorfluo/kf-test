@@ -9,14 +9,14 @@ describe('maybePlural', () => {
   });
   //----------------------------------------------------------------------------
   it.each([2, 0, 0.25, -1])(
-    'returns given word with default suffix given a count different from 1',
+    'returns given word with default suffix given a count different from 1 (%d)',
     (count) => {
       expect(maybePlural(count, 'dog')).toBe(`${count} dogs`);
     }
   );
   //----------------------------------------------------------------------------
   it.each([5, -0, 0.25, -1])(
-    'returns given word with given suffix given a count different from 1',
+    'returns given word with given suffix given a count different from 1 (%d)',
     (count) => {
       expect(maybePlural(count, 'bus', 'es')).toBe(`${count} buses`);
     }
