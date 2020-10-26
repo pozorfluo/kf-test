@@ -2,14 +2,12 @@
 /**
  *
  */
-import {Select} from '../utils';
+import { Select } from '../utils';
 
 import placeholderSearchResults from './placeholderSearchResults';
 
-
-
 /**
- * Define a "filled" Movie schema as used in the app, i.e. the interesting bits 
+ * Define a "filled" Movie schema as used in the app, i.e. the interesting bits
  * from a possibly richer schema.
  */
 export interface Movie {
@@ -30,27 +28,62 @@ export type MovieSearchResult = Select<
 
 export type MovieDetails = Select<Movie, 'Plot' | 'Actors'> & MovieSearchResult;
 
+function placeholderGetMovies(): Promise<MovieSearchResult[]> {
+  console.log('fake fetching ...');
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      if (Math.round(Math.random())) {
+        resolve(placeholderSearchResults);
+      } else {
+        reject('fake loading error !');
+      }
+    }, 1000);
+  });
+}
 
-// function placeholderGetMovies() : Promise<MovieSearchResult[]> {
-//   console.log('fake fetching ...');
-// return new Promise(function (resolve, reject) {
-//   setTimeout(function () {
-//     if (Math.round(Math.random())) {
-//       resolve(placeholderSearchResults);
-//     } else {
-//       reject('fake loading error !');
-//     }
-//   }, 1000);
-// });
-// }
+export class Omdb {
+  static buildUrl = (key: string, by: string, value: string) =>
+    `https://www.omdbapi.com/?apikey=${key}&type=movie&${by}=${value}`;
 
-// class Omdb {
-//   static _baseURL : 
-//   _APIKey : string;
-//   constructor(APIkey : string) {
-//     this._APIKey = APIkey;
-//   }
-// }
+  static by = {
+    ID: 'i',
+    type: 'type',
+    title: 't',
+    search: 's',
+  };
+
+  _APIKey: string;
+
+  /** Naïve mockable wrapper.  */
+  async _fetch(input: RequestInfo, init?: RequestInit) {
+    return fetch(input, init);
+  }
+
+  constructor(APIkey: string) {
+    this._APIKey = APIkey;
+  }
+
+  async getMoviesByTitleAsync(
+    searchFor: string,
+    controller?: AbortController
+  ): Promise<MovieSearchResult[]> {
+    // console.log(Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor));
+    // return placeholderGetMovies();
+    // const controller = new AbortController();
+    const response = await this._fetch(
+      Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
+      controller ? { signal: controller.signal } : {}
+    );
+
+    if (response.status >= 400 && response.status < 600) {
+      throw new Error(
+        `${response.status} : error while contacting omdbapi.com !`
+      );
+    }
+
+    return response.json();
+  }
+}
 
 // const MovieSearchDemo: MovieSearchResult = {
 //   Title: 'yeah',
@@ -72,7 +105,6 @@ export type MovieDetails = Select<Movie, 'Plot' | 'Actors'> & MovieSearchResult;
  * report failures.
  */
 
-
- /**
-  * Jeeeeesst !
-  */
+/**
+ * Jeeeeesst !
+ */
