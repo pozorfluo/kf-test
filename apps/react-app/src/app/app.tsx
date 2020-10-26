@@ -7,6 +7,8 @@ import {
   setMovieSearchContext,
 } from '../features/movieSearchBarSlice';
 
+import { getAPIKey } from '../utils';
+
 import { Container } from '@material-ui/core';
 import { MovieSearchBar, MovieSearchResults } from '../features';
 import '../web-components/img-spinner';
@@ -19,25 +21,31 @@ export const App = () => {
     (state: RootState) => state.movieSearchBar
   );
 
+  /** @note Part of a workaround to avoid commiting API keys to the repo. */
+  const APIKey = getAPIKey();
+
   const setMovieSearch = (searchFor: string) => {
     dispatch(searchMovies({ searchFor }));
-    console.log(`Search for "${searchFor}" fired !`)
+    console.log(`Search for "${searchFor}" fired !`);
   };
 
   const showMovies = () => {
     dispatch(setMovieSearchContext({ current: 'listing' }));
   };
 
-    // const content = current === 'listing' 
-    //     ? (<MovieSearchResults />)
-    //     :
-
+  // const content = current === 'listing'
+  //     ? (<MovieSearchResults />)
+  //     :
 
   return (
     <Container className="app" maxWidth="md">
-      <MovieSearchBar setMovieSearch={setMovieSearch} showMovies={showMovies}/>
+      <MovieSearchBar
+        setMovieSearch={setMovieSearch}
+        showMovies={showMovies}
+        APIKey={APIKey}
+      />
       {/* {content} */}
-      { current === "listing" && <MovieSearchResults />}
+      {current === 'listing' && <MovieSearchResults />}
     </Container>
   );
 };

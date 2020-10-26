@@ -12,11 +12,14 @@ import {
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
   showMovies: () => void;
+  /** @note Part of a workaround to avoid commiting API keys to the repo. */
+  APIKey : string;
 }
 
 export const MovieSearchBar = ({
   setMovieSearch,
   showMovies,
+  APIKey,
 }: MovieSearchBarProps) => {
   const [currentSearch, setCurrentSearch] = useState('');
 
@@ -36,7 +39,7 @@ export const MovieSearchBar = ({
   return (
     <FormControl style={{ width: '100%' }}>
       <InputLabel htmlFor="search-field">
-        Search for a movie by title
+        Search for a movie by title ({APIKey})
       </InputLabel>
       <Input
         id="search-field"
