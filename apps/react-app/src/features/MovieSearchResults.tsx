@@ -11,7 +11,7 @@ import {
 
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
-import { MovieDetails } from '../api/Omdb';
+import { MovieDetails } from '../api/OmdbAPI';
 import { MoviePopUp } from './MoviePopUp';
 import placeholderSearchResults from './placeholderSearchResults';
 import placeholderDetails from './placeholderDetails';

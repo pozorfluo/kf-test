@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export interface MoviePosterProps {
+interface MoviePosterProps {
   title: string;
   url: string;
   height?: number;

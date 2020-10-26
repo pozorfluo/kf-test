@@ -1,4 +1,4 @@
-import { MovieSearchResult } from '../api/Omdb';
+import { MovieSearchResult } from '../api/OmdbAPI';
 
 const placeholderSearchResults: MovieSearchResult[] = [
   {
