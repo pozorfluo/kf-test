@@ -12,7 +12,7 @@ import {
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
 import { MovieDetails } from '../api/Omdb';
-import { MoviePopUp } from '../features';
+import { MoviePopUp } from './MoviePopUp';
 import placeholderSearchResults from './placeholderSearchResults';
 import placeholderDetails from './placeholderDetails';
 
