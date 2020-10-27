@@ -41,6 +41,9 @@ function placeholderGetMovies(): Promise<MovieSearchResult[]> {
   });
 }
 
+/**
+ *
+ */
 export class Omdb {
   static buildUrl = (key: string, by: string, value: string) =>
     `https://www.omdbapi.com/?apikey=${key}&type=movie&${by}=${value}`;
@@ -54,34 +57,61 @@ export class Omdb {
 
   _APIKey: string;
 
+  constructor(APIkey: string) {
+    this._APIKey = APIkey;
+  }
+
   /** Naïve mockable wrapper.  */
   async _fetch(input: RequestInfo, init?: RequestInit) {
     return fetch(input, init);
   }
 
-  constructor(APIkey: string) {
-    this._APIKey = APIkey;
+  /**
+   *
+   */
+  async _query(url: string, controller?: AbortController) {
+    const response = await this._fetch(
+      url,
+      controller ? { signal: controller.signal } : {}
+    );
+
+    const result = await response.json();
+
+    if (response.ok) {
+      return result;
+    } else {
+      throw new Error(
+        `Error ${response.status} ${response.statusText} : ${
+          result.Error || 'while contacting omdbapi.com !'
+        }`
+      );
+    }
   }
 
+  /**
+   *
+   */
   async getMoviesByTitleAsync(
     searchFor: string,
     controller?: AbortController
   ): Promise<MovieSearchResult[]> {
-    // console.log(Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor));
-    // return placeholderGetMovies();
-    // const controller = new AbortController();
-    const response = await this._fetch(
+    return this._query(
       Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
-      controller ? { signal: controller.signal } : {}
+      controller
     );
+  }
 
-    if (response.status >= 400 && response.status < 600) {
-      throw new Error(
-        `${response.status} : error while contacting omdbapi.com !`
-      );
-    }
-
-    return response.json();
+  /**
+   *
+   */
+  async getMovieDetailsAsync(
+    imdbID: string,
+    controller?: AbortController
+  ): Promise<MovieSearchResult[]> {
+    return this._query(
+      Omdb.buildUrl(this._APIKey, Omdb.by.ID, imdbID),
+      controller
+    );
   }
 }
 
@@ -99,12 +129,3 @@ export class Omdb {
 // }, MovieSearchDemo);
 
 // console.log(MovieSearchDemo,MovieDetailsDemo);
-
-/**
- * Fetchy methods shall return some union like MovieSearchResult | null to
- * report failures.
- */
-
-/**
- * Jeeeeesst !
- */
