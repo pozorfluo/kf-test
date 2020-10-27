@@ -4,7 +4,7 @@
  */
 import { Select } from '../utils';
 
-import placeholderSearchResults from './placeholderSearchResults';
+// import placeholderSearchResults from './placeholderSearchResults';
 
 /**
  * Define a "filled" Movie schema as used in the app, i.e. the interesting bits
@@ -28,18 +28,18 @@ export type MovieSearchResult = Select<
 
 export type MovieDetails = Select<Movie, 'Plot' | 'Actors'> & MovieSearchResult;
 
-function placeholderGetMovies(): Promise<MovieSearchResult[]> {
-  console.log('fake fetching ...');
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      if (Math.round(Math.random())) {
-        resolve(placeholderSearchResults);
-      } else {
-        reject('fake loading error !');
-      }
-    }, 1000);
-  });
-}
+// function placeholderGetMovies(): Promise<MovieSearchResult[]> {
+//   console.log('fake fetching ...');
+//   return new Promise(function (resolve, reject) {
+//     setTimeout(function () {
+//       if (Math.round(Math.random())) {
+//         resolve(placeholderSearchResults);
+//       } else {
+//         reject('fake loading error !');
+//       }
+//     }, 1000);
+//   });
+// }
 
 /**
  *
@@ -69,7 +69,7 @@ export class Omdb {
   /**
    *
    */
-  async _query(url: string, controller?: AbortController) {
+  async _request(url: string, controller?: AbortController) {
     const response = await this._fetch(
       url,
       controller ? { signal: controller.signal } : {}
@@ -95,7 +95,8 @@ export class Omdb {
     searchFor: string,
     controller?: AbortController
   ): Promise<MovieSearchResult[]> {
-    return this._query(
+    /** @todo Assert result type ! */
+    return this._request(
       Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
       controller
     );
@@ -108,7 +109,8 @@ export class Omdb {
     imdbID: string,
     controller?: AbortController
   ): Promise<MovieSearchResult[]> {
-    return this._query(
+    /** @todo Assert result type ! */
+    return this._request(
       Omdb.buildUrl(this._APIKey, Omdb.by.ID, imdbID),
       controller
     );

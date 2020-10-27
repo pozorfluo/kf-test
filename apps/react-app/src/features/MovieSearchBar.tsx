@@ -12,8 +12,8 @@ import {
   FormControl,
 } from '@material-ui/core';
 
-import { MovieSearchResult } from '../api/OmdbAPI';
-import placeholderSearchResults from './placeholderSearchResults';
+import { MovieSearchResult } from '../api';
+import placeholderSearchResults from '../api/placeholderSearchResults';
 
 
 function placeholderGetMovies() : Promise<MovieSearchResult[]> {

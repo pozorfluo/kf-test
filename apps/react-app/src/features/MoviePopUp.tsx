@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 
-import { MovieDetails } from '../api/OmdbAPI';
+import { MovieDetails } from '../api';
 import { MoviePoster } from '../components';
 
 export interface MovieDetailsProps {

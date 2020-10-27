@@ -11,11 +11,11 @@ import {
 
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
-import { MovieDetails } from '../api/OmdbAPI';
+import { MovieDetails } from '../api';
 import { MoviePopUp } from './MoviePopUp';
-import { MovieSearchResult } from '../api/OmdbAPI';
+import { MovieSearchResult } from '../api';
 // import placeholderSearchResults from './placeholderSearchResults';
-import placeholderDetails from './placeholderDetails';
+import placeholderDetails from '../api/placeholderDetails';
 
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MovieSearchResult } from '../api/OmdbAPI'; // , MovieDetails
+import { MovieSearchResult } from '../api'; // , MovieDetails
 import { Select } from '../utils';
 
 /**

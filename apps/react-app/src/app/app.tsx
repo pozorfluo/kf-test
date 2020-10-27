@@ -11,7 +11,7 @@ import { getAPIKey } from '../utils';
 
 import { Container } from '@material-ui/core';
 import { MovieSearchBar, MovieList } from '../features';
-import { MovieSearchResult } from '../api/OmdbAPI'; 
+import { MovieSearchResult } from '../api'; 
 import '../web-components/img-spinner';
 
 import './app.scss';

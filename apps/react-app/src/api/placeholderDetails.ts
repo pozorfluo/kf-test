@@ -1,4 +1,4 @@
-import { MovieDetails } from '../api/OmdbAPI';
+import { MovieDetails } from '../api';
 
 const placeholderDetails: MovieDetails = {
   Title: 'The Matrix',
