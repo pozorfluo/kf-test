@@ -76,6 +76,32 @@ describe('Omdb', () => {
       );
     });
     //--------------------------------------------------------------------------
+    it('can abort an in-flight request for a list of movies', async () => {
+      const mockData = [{}];
+      const mockResponse = {
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      };
+      jest
+        .spyOn(omdb, '_fetch')
+        .mockImplementation(
+          () => Promise.resolve(mockResponse) as Promise<Response>
+        );
+
+      const controller = new AbortController();
+      expect(async () => {
+        omdb.getMoviesByTitleAsync('TestMovie', controller);
+        controller.abort();
+      }).rejects.toThrowError('The operation was aborted');
+      expect(
+        omdb._fetch
+      ).toHaveBeenCalledWith(
+        'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
+        { signal: controller.signal }
+      );
+    });
+    //--------------------------------------------------------------------------
     it("can fetch a movie's details given its imdbID when server return a successful response", async () => {
       const mockData = {
         Title: 'The Matrix',
@@ -127,6 +153,32 @@ describe('Omdb', () => {
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&i=testID',
         {}
+      );
+    });
+    //--------------------------------------------------------------------------
+    it("can abort an in-flight request for a movie's details", async () => {
+      const mockData = [{}];
+      const mockResponse = {
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      };
+      jest
+        .spyOn(omdb, '_fetch')
+        .mockImplementation(
+          () => Promise.resolve(mockResponse) as Promise<Response>
+        );
+
+      const controller = new AbortController();
+      expect(async () => {
+        omdb.getMovieDetailsAsync('testID', controller);
+        controller.abort();
+      }).rejects.toThrowError('The operation was aborted');
+      expect(
+        omdb._fetch
+      ).toHaveBeenCalledWith(
+        'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&i=testID',
+        { signal: controller.signal }
       );
     });
   });
