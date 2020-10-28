@@ -19,12 +19,10 @@ describe('Omdb', () => {
   describe('async requests', () => {
     let omdb: Omdb;
 
-    beforeEach(() => {
-      omdb = new Omdb('TestApiKey');
-    });
-    //--------------------------------------------------------------------------
-    it('can fetch a list of movies given a search string when server return a successful response', async () => {
-      const mockData = [
+    const mockSearchResult = {
+      Response: 'True',
+      totalResults: '1',
+      Search: [
         {
           Title: 'The Matrix',
           Year: '1999',
@@ -32,11 +30,31 @@ describe('Omdb', () => {
           Type: 'movie',
           Poster: 'https://m.media-amazon.com/images/M/MV_V1_SX300.jpg',
         },
-      ];
+      ],
+    };
+
+    const mockDetailsResult = {
+      Response: 'True',
+      Title: 'The Matrix',
+      Year: '1999',
+      imdbID: 'testID',
+      Type: 'movie',
+      Poster: 'https://m.media-amazon.com/images/M/MV_V1_SX300.jpg',
+      Actors: 'Keanu Reeves, Alex Winter',
+      Plot: 'Non-heinous dudes in most bogus computer.',
+    };
+
+    const mockFailure = { Response: 'False', Error: 'Invalid API key!' };
+
+    beforeEach(() => {
+      omdb = new Omdb('TestApiKey');
+    });
+    //--------------------------------------------------------------------------
+    it('can fetch a list of movies given a search string when server return a successful response', async () => {
       const mockResponse = {
         status: 200,
         ok: true,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockSearchResult),
       };
       jest
         .spyOn(omdb, '_fetch')
@@ -44,7 +62,9 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect(await omdb.getMoviesByTitleAsync('TestMovie')).toEqual(mockData);
+      expect(await omdb.getMoviesByTitleAsync('TestMovie')).toEqual(
+        mockSearchResult.Search
+      );
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
         {}
@@ -52,12 +72,11 @@ describe('Omdb', () => {
     });
     //--------------------------------------------------------------------------
     it('throws if anything goes wrong when fetching a list of movies', async () => {
-      const mockData = { Response: 'False', Error: 'Invalid API key!' };
       const mockResponse = {
         status: 401,
         statusText: 'Unauthorized',
         ok: false,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockFailure),
       };
       jest
         .spyOn(omdb, '_fetch')
@@ -65,6 +84,7 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
+      expect.assertions(2);
       expect(async () => {
         await omdb.getMoviesByTitleAsync('TestMovie');
       }).rejects.toThrowError(
@@ -77,13 +97,12 @@ describe('Omdb', () => {
     });
     //--------------------------------------------------------------------------
     it('can abort an in-flight request for a list of movies', async () => {
-      const mockData = [{}];
       const mockResponse = {
         status: 200,
         ok: true,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockSearchResult),
       };
-      
+
       jest
         .spyOn(omdb, '_fetch')
         .mockImplementation(
@@ -94,7 +113,7 @@ describe('Omdb', () => {
 
       const controller = new AbortController();
       expect(await omdb.getMoviesByTitleAsync('TestMovie', controller)).toEqual(
-        mockData
+        mockSearchResult.Search
       );
 
       expect(
@@ -106,20 +125,10 @@ describe('Omdb', () => {
     });
     //--------------------------------------------------------------------------
     it("can fetch a movie's details given its imdbID when server return a successful response", async () => {
-      const mockData = {
-        Title: 'The Matrix',
-        Year: '1999',
-        imdbID: 'testID',
-        Type: 'movie',
-        Poster: 'https://m.media-amazon.com/images/M/MV_V1_SX300.jpg',
-        Actors: 'Keanu Reeves, Alex Winter',
-        Plot: 'Non-heinous dudes in most bogus computer.',
-      };
-
       const mockResponse = {
         status: 200,
         ok: true,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockDetailsResult),
       };
       jest
         .spyOn(omdb, '_fetch')
@@ -127,7 +136,9 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect(await omdb.getMovieDetailsAsync('testID')).toEqual(mockData);
+      expect(await omdb.getMovieDetailsAsync('testID')).toEqual(
+        mockDetailsResult
+      );
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&i=testID',
         {}
@@ -135,12 +146,11 @@ describe('Omdb', () => {
     });
     //--------------------------------------------------------------------------
     it("throws if anything goes wrong when fetching a movie's details", async () => {
-      const mockData = { Response: 'False', Error: 'Invalid API key!' };
       const mockResponse = {
         status: 401,
         statusText: 'Unauthorized',
         ok: false,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockFailure),
       };
       jest
         .spyOn(omdb, '_fetch')
@@ -160,11 +170,10 @@ describe('Omdb', () => {
     });
     //--------------------------------------------------------------------------
     it("can abort an in-flight request for a movie's details", async () => {
-      const mockData = [{}];
       const mockResponse = {
         status: 200,
         ok: true,
-        json: () => Promise.resolve(mockData),
+        json: () => Promise.resolve(mockDetailsResult),
       };
 
       jest
@@ -177,7 +186,7 @@ describe('Omdb', () => {
 
       const controller = new AbortController();
       expect(await omdb.getMovieDetailsAsync('testID', controller)).toEqual(
-        mockData
+        mockDetailsResult
       );
 
       expect(

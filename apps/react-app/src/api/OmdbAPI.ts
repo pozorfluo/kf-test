@@ -148,32 +148,3 @@ export class Omdb {
   }
 }
 
-// const MovieSearchDemo: MovieSearchResult = {
-//   Title: 'yeah',
-//   Year: '1980',
-//   imdbID: '3832823',
-//   Poster: 'urllllll',
-//   Actors: 'Brangelina Jaylo',
-// };
-
-// const MovieDetailsDemo: MovieDetails = Object.assign({
-//   Plot : 'Two sisters battle the Miami mafia in penguin suits.',
-//   Actors : 'Sonia Crockit, Michelle Vedette',
-// }, MovieSearchDemo);
-
-// console.log(MovieSearchDemo,MovieDetailsDemo);
-
-// import placeholderSearchResults from './placeholderSearchResults';
-
-// function placeholderGetMovies(): Promise<MovieSearchResult[]> {
-//   console.log('fake fetching ...');
-//   return new Promise(function (resolve, reject) {
-//     setTimeout(function () {
-//       if (Math.round(Math.random())) {
-//         resolve(placeholderSearchResults);
-//       } else {
-//         reject('fake loading error !');
-//       }
-//     }, 1000);
-//   });
-// }
