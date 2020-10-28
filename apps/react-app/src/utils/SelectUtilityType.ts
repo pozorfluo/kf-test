@@ -11,4 +11,4 @@
  * Inspired by Rich Hickey talk "Maybe Not" on clojure specs.
  */
 
-export type Select<T, R extends keyof T> = Partial<T> & Pick<T, R>;
+export type Select<T, R extends keyof T> = Partial<T> & Required<Pick<T, R>>;
