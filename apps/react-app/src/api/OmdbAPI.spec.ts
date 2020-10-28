@@ -63,7 +63,7 @@ describe('Omdb', () => {
         );
 
       expect(await omdb.getMoviesByTitleAsync('TestMovie')).toEqual(
-        mockSearchResult.Search
+        [mockSearchResult.Search, 1, 1]
       );
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
@@ -113,7 +113,7 @@ describe('Omdb', () => {
 
       const controller = new AbortController();
       expect(await omdb.getMoviesByTitleAsync('TestMovie', controller)).toEqual(
-        mockSearchResult.Search
+        [mockSearchResult.Search, 1, 1]
       );
 
       expect(

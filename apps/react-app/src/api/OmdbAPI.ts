@@ -32,17 +32,20 @@ type OmbdAPIResponse = {
   Response: 'True' | 'False';
   Error?: string;
   Search?: MovieSearchResult[];
+  totalResults?: string;
   [extension: string]: unknown;
 } & Partial<MovieDetails>;
 
-type OmdbAPISearchSuccess = Select<OmbdAPIResponse, 'Response' | 'Search'>;
+type OmdbAPISearchSuccess = Select<
+  OmbdAPIResponse,
+  'Response' | 'Search' | 'totalResults'
+>;
 type OmdbAPIDetailsSuccess = OmbdAPIResponse & MovieDetails;
 
 /**
  *
  */
 function isSearchSuccess(res: OmbdAPIResponse): res is OmdbAPISearchSuccess {
-  //   return (res as OmdbAPISearchSuccess).Search !== undefined;
   return res.Response === 'True' && 'Search' in res;
 }
 
@@ -106,19 +109,22 @@ export class Omdb {
   }
 
   /**
-   *
+   * @returns [MovieSearchResult[], number, number] tuple of Results, current
+   *          page number, total number of results.
    */
   async getMoviesByTitleAsync(
     searchFor: string,
     controller?: AbortController
-  ): Promise<MovieSearchResult[]> {
+  ): Promise<[MovieSearchResult[], number, number]> {
+    //   ): Promise<OmdbAPISearchSuccess> {
     const result = await this._request(
       Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
       controller
     );
 
     if (isSearchSuccess(result)) {
-      return result.Search;
+      return [result.Search, 1, +result.totalResults];
+      //   return result;
     } else {
       throw new Error(
         result.Error || 'Unspecified error with returned search results.'
@@ -147,4 +153,3 @@ export class Omdb {
     }
   }
 }
-

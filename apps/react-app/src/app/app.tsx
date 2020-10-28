@@ -30,9 +30,18 @@ export const App = () => {
     console.log(`Search for "${searchFor}" fired !`);
   };
 
-  const showMovies = (movies: MovieSearchResult[]) => {
+  const showMovies = (
+    movies: MovieSearchResult[],
+    total: number,
+    page: number
+  ) => {
     dispatch(
-      setMovieSearchContext({ current: 'listing', searchResults: movies })
+      setMovieSearchContext({
+        current: 'listing',
+        searchResults: movies,
+        totalResults: total,
+        page: page,
+      })
     );
   };
 

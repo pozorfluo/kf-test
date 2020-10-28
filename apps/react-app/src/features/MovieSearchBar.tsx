@@ -19,7 +19,11 @@ import { Omdb, MovieSearchResult } from '../api';
  */
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
-  showMovies: (movies: MovieSearchResult[]) => void;
+  showMovies: (
+    movies: MovieSearchResult[],
+    total: number,
+    page: number
+  ) => void;
   showError: (err: string) => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
@@ -58,7 +62,7 @@ export const MovieSearchBar = ({
   };
 
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && currentSearch) {
       setMovieSearch(currentSearch);
     }
   };
@@ -67,11 +71,11 @@ export const MovieSearchBar = ({
     async function fetchMovies() {
       try {
         const omdb = new Omdb(APIKey);
-        const [results, page, total] = await omdb.getMoviesByTitleAsync(
+        const [results, total, page] = await omdb.getMoviesByTitleAsync(
           searchFor
         );
-        console.log(results, page, total);
-        showMovies(results);
+        console.log(results, total, page);
+        showMovies(results, total, page);
       } catch (err) {
         showError(err.message);
       }
@@ -92,10 +96,18 @@ export const MovieSearchBar = ({
         value={currentSearch}
         endAdornment={
           <InputAdornment position="end">
-            <IconButton aria-label="cancel" onClick={onClear}>
+            <IconButton
+              aria-label="cancel"
+              onClick={onClear}
+              disabled={!currentSearch}
+            >
               <Icon>clear</Icon>
             </IconButton>
-            <IconButton aria-label="search" onClick={onSubmit}>
+            <IconButton
+              aria-label="search"
+              onClick={onSubmit}
+              disabled={!currentSearch}
+            >
               <Icon>search</Icon>
             </IconButton>
           </InputAdornment>
