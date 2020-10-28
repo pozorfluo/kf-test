@@ -12,23 +12,11 @@ import {
   FormControl,
 } from '@material-ui/core';
 
-import { MovieSearchResult } from '../api';
-import placeholderSearchResults from '../api/placeholderSearchResults';
+import { Omdb, MovieSearchResult } from '../api';
 
-
-function placeholderGetMovies() : Promise<MovieSearchResult[]> {
-    console.log('fake fetching ...');
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      if (Math.round(Math.random())) {
-        resolve(placeholderSearchResults);
-      } else {
-        reject('fake loading error !');
-      }
-    }, 1000);
-  });
-}
-
+/**
+ *
+ */
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
   showMovies: (movies: MovieSearchResult[]) => void;
@@ -36,6 +24,9 @@ interface MovieSearchBarProps {
   APIKey: string;
 }
 
+/**
+ *
+ */
 export const MovieSearchBar = ({
   setMovieSearch,
   showMovies,
@@ -45,7 +36,7 @@ export const MovieSearchBar = ({
   const { current, searchFor } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
-//   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
+  //   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
 
   const onSearchChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentSearch(e.target.value);
@@ -63,8 +54,10 @@ export const MovieSearchBar = ({
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const searchResults = await placeholderGetMovies();
-        // setMovies(searchResults);
+        const omdb = new Omdb(APIKey);
+        console.log(Omdb.buildUrl(APIKey, Omdb.by.search, searchFor));
+        const searchResults = await omdb.getMoviesByTitleAsync(searchFor);
+        console.log(searchResults);
         showMovies(searchResults);
       } catch (err) {
         console.error(err);
@@ -79,7 +72,7 @@ export const MovieSearchBar = ({
       fetchMovies();
       console.log('Loading ...');
     }
-  }, [searchFor, showMovies, current]);
+  }, [searchFor, showMovies, current, APIKey]);
 
   return (
     <FormControl style={{ width: '100%' }}>

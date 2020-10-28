@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------- Omdb
 /**
- *
+ * @note Ignoring pagination for now.
+ * @note Gotcha : For some reason omdbapi.com returns a Response status as a
+ *       string, NOT A BOOLEAN.
  */
 import { Select } from '../utils';
-
-// import placeholderSearchResults from './placeholderSearchResults';
 
 /**
  * Define a "filled" Movie schema as used in the app, i.e. the interesting bits
@@ -28,18 +28,30 @@ export type MovieSearchResult = Select<
 
 export type MovieDetails = Select<Movie, 'Plot' | 'Actors'> & MovieSearchResult;
 
-// function placeholderGetMovies(): Promise<MovieSearchResult[]> {
-//   console.log('fake fetching ...');
-//   return new Promise(function (resolve, reject) {
-//     setTimeout(function () {
-//       if (Math.round(Math.random())) {
-//         resolve(placeholderSearchResults);
-//       } else {
-//         reject('fake loading error !');
-//       }
-//     }, 1000);
-//   });
-// }
+type OmbdAPIResponse = {
+  Response: 'True' | 'False';
+  Error?: string;
+  Search?: MovieSearchResult[];
+  [extension: string]: unknown;
+} & Partial<MovieDetails>;
+
+type OmdbAPISearchSuccess = Select<OmbdAPIResponse, 'Response' | 'Search'>;
+type OmdbAPIDetailsSuccess = OmbdAPIResponse & MovieDetails;
+
+/**
+ *
+ */
+function isSearchSuccess(res: OmbdAPIResponse): res is OmdbAPISearchSuccess {
+  //   return (res as OmdbAPISearchSuccess).Search !== undefined;
+  return res.Response === 'True' && 'Search' in res;
+}
+
+/**
+ *
+ */
+function isDetailsSuccess(res: OmbdAPIResponse): res is OmdbAPIDetailsSuccess {
+  return res.Response === 'True' && 'Title' in res;
+}
 
 /**
  *
@@ -69,7 +81,10 @@ export class Omdb {
   /**
    *
    */
-  async _request(url: string, controller?: AbortController) {
+  async _request(
+    url: string,
+    controller?: AbortController
+  ): Promise<OmbdAPIResponse> {
     const response = await this._fetch(
       url,
       controller ? { signal: controller.signal } : {}
@@ -77,6 +92,7 @@ export class Omdb {
 
     const result = await response.json();
 
+    // if (response.ok && result.Response === 'True') {
     if (response.ok) {
       return result;
     } else {
@@ -95,11 +111,18 @@ export class Omdb {
     searchFor: string,
     controller?: AbortController
   ): Promise<MovieSearchResult[]> {
-    /** @todo Assert result type ! */
-    return this._request(
+    const result = await this._request(
       Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
       controller
     );
+
+    if (isSearchSuccess(result)) {
+      return result.Search;
+    } else {
+      throw new Error(
+        result.Error || 'Unspecified error with returned search results.'
+      );
+    }
   }
 
   /**
@@ -108,12 +131,19 @@ export class Omdb {
   async getMovieDetailsAsync(
     imdbID: string,
     controller?: AbortController
-  ): Promise<MovieSearchResult[]> {
-    /** @todo Assert result type ! */
-    return this._request(
+  ): Promise<MovieDetails> {
+    const result = await this._request(
       Omdb.buildUrl(this._APIKey, Omdb.by.ID, imdbID),
       controller
     );
+
+    if (isDetailsSuccess(result)) {
+      return result;
+    } else {
+      throw new Error(
+        result.Error || 'Unspecified error with returned details results.'
+      );
+    }
   }
 }
 
@@ -131,3 +161,18 @@ export class Omdb {
 // }, MovieSearchDemo);
 
 // console.log(MovieSearchDemo,MovieDetailsDemo);
+
+// import placeholderSearchResults from './placeholderSearchResults';
+
+// function placeholderGetMovies(): Promise<MovieSearchResult[]> {
+//   console.log('fake fetching ...');
+//   return new Promise(function (resolve, reject) {
+//     setTimeout(function () {
+//       if (Math.round(Math.random())) {
+//         resolve(placeholderSearchResults);
+//       } else {
+//         reject('fake loading error !');
+//       }
+//     }, 1000);
+//   });
+// }

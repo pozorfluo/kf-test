@@ -1,1 +1,1 @@
-export {Omdb, Movie, MovieDetails, MovieSearchResult} from './OmdbAPI';
+export * from './OmdbAPI';
