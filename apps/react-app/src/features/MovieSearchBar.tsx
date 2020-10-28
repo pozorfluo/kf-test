@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/rootReducer';
 
@@ -38,7 +38,7 @@ export const MovieSearchBar = ({
   const { current, searchFor } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
-//   const [err, setErr] = useState<Error | null>(null);
+  //   const [err, setErr] = useState<Error | null>(null);
 
   //   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
 
@@ -52,22 +52,30 @@ export const MovieSearchBar = ({
   };
 
   const onSubmit = () => {
-    setMovieSearch(currentSearch);
+    if (currentSearch) {
+      setMovieSearch(currentSearch);
+    }
+  };
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      setMovieSearch(currentSearch);
+    }
   };
 
   useEffect(() => {
     async function fetchMovies() {
       try {
-        // setErr(null);
         const omdb = new Omdb(APIKey);
-        const result = await omdb.getMoviesByTitleAsync(searchFor);
-        console.log(result);
-        showMovies(result);
+        const [results, page, total] = await omdb.getMoviesByTitleAsync(
+          searchFor
+        );
+        console.log(results, page, total);
+        showMovies(results);
       } catch (err) {
         showError(err.message);
       }
     }
-    // if ((current === 'idle' || current === 'failure') && searchFor) {
     if (current === 'loading' && searchFor) {
       fetchMovies();
       console.log('Loading movie list ...');
@@ -94,6 +102,7 @@ export const MovieSearchBar = ({
         }
         /** @todo Debounce onChange event if you let it trigger a search. */
         onChange={onSearchChanged}
+        onKeyPress={onKey}
         fullWidth
         autoFocus
       ></Input>
