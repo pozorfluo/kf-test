@@ -44,7 +44,7 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect(await omdb.getMoviesByTitleAsync('TestMovie'));
+      expect(await omdb.getMoviesByTitleAsync('TestMovie')).toEqual(mockData);
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
         {}
@@ -83,17 +83,20 @@ describe('Omdb', () => {
         ok: true,
         json: () => Promise.resolve(mockData),
       };
+      
       jest
         .spyOn(omdb, '_fetch')
         .mockImplementation(
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
+      expect.assertions(2);
+
       const controller = new AbortController();
-      expect(async () => {
-        omdb.getMoviesByTitleAsync('TestMovie', controller);
-        controller.abort();
-      }).rejects.toThrowError('The operation was aborted');
+      expect(await omdb.getMoviesByTitleAsync('TestMovie', controller)).toEqual(
+        mockData
+      );
+
       expect(
         omdb._fetch
       ).toHaveBeenCalledWith(
@@ -124,7 +127,7 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect(await omdb.getMovieDetailsAsync('testID'));
+      expect(await omdb.getMovieDetailsAsync('testID')).toEqual(mockData);
       expect(omdb._fetch).toHaveBeenCalledWith(
         'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&i=testID',
         {}
@@ -163,17 +166,20 @@ describe('Omdb', () => {
         ok: true,
         json: () => Promise.resolve(mockData),
       };
+
       jest
         .spyOn(omdb, '_fetch')
         .mockImplementation(
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
+      expect.assertions(2);
+
       const controller = new AbortController();
-      expect(async () => {
-        omdb.getMovieDetailsAsync('testID', controller);
-        controller.abort();
-      }).rejects.toThrowError('The operation was aborted');
+      expect(await omdb.getMovieDetailsAsync('testID', controller)).toEqual(
+        mockData
+      );
+
       expect(
         omdb._fetch
       ).toHaveBeenCalledWith(
