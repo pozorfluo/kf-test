@@ -1,4 +1,6 @@
 import React from 'react';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
 import {
   IconButton,
   Icon,
@@ -7,10 +9,30 @@ import {
   DialogActions,
   DialogContent,
   CircularProgress,
+  Button,
+  Slide,
+  Grid,
 } from '@material-ui/core';
+
+import { TransitionProps } from '@material-ui/core/transitions';
+import Paper, { PaperProps } from '@material-ui/core/Paper';
 
 import { MovieDetails } from '../api';
 import { MoviePoster } from '../components';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    dialog: {
+      borderRadius: 0,
+    },
+    button: {
+      borderRadius: 0,
+    },
+  })
+);
 
 export interface MovieDetailsProps {
   open: boolean;
@@ -19,24 +41,62 @@ export interface MovieDetailsProps {
   error: string;
 }
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps, // & {children?: React.ReactElement<any, any> }
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
+const DialogPaper = (props: PaperProps) => {
+  return <Paper {...props} variant="outlined" square />;
+};
+/**
+ * @todo Fix : Warning: findDOMNode is deprecated in StrictMode.
+ *            findDOMNode was passed an instance of Transition which is inside
+ *            StrictMode.
+ * @todo Talk to machine/store directly once they're plugged in.
+ */
 export const MoviePopUp = ({
   open,
   movieDetails,
   onClose,
   error,
 }: MovieDetailsProps) => {
-  /**
-   * @todo Talk to machine/store directly once they're plugged in.
-   * */
+  const classes = useStyles();
+
   const content = movieDetails ? (
     <>
       <DialogTitle>
-        {movieDetails.Title} ({movieDetails.Year})
+        <Grid container direction="row" justify="space-between">
+          <Grid item>
+            {movieDetails.Title} ({movieDetails.Year})
+          </Grid>
+          <Grid item>
+            <IconButton aria-label="close" onClick={onClose}>
+              <Icon>close</Icon>
+            </IconButton>
+          </Grid>
+        </Grid>
       </DialogTitle>
       <DialogContent>
-        <MoviePoster url={movieDetails.Poster} title={movieDetails.Title} />
-        <p>{movieDetails.Plot}</p>
-        <p>{movieDetails.Actors}</p>
+      <div className={classes.root}>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+          justify="center"
+          alignItems="center"
+        >
+          <Grid item xs={12} md={5}>
+            <MoviePoster url={movieDetails.Poster} title={movieDetails.Title} />
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <p>{movieDetails.Plot}</p>
+            <p>{movieDetails.Actors}</p>
+          </Grid>
+        </Grid>
+        </div>  
       </DialogContent>
     </>
   ) : error ? (
@@ -51,12 +111,18 @@ export const MoviePopUp = ({
         movieDetails ? `synopsis of ${movieDetails.Title}` : 'loading content'
       }
       open={open}
+      PaperComponent={DialogPaper}
+      TransitionComponent={Transition}
+      onEscapeKeyDown={onClose}
+      className={classes.dialog}
+      maxWidth="md"
+      keepMounted
     >
       {content}
       <DialogActions>
-        <IconButton aria-label="close" onClick={onClose}>
-          <Icon>close</Icon>
-        </IconButton>
+        <Button variant="outlined" className={classes.button} onClick={onClose}>
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

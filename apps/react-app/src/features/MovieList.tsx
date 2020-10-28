@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Icon,
   IconButton,
@@ -15,7 +15,7 @@ import { MovieDetails, Omdb } from '../api';
 import { MoviePopUp } from './MoviePopUp';
 import { MovieSearchResult } from '../api';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',

@@ -49,18 +49,10 @@ const movieSearchBarSlice = createSlice({
         error = null,
       } = action.payload;
       state.current = current;
-      if (searchResults) {
-        state.searchResults = searchResults;
-      }
-      if (totalResults) {
-        state.totalResults = totalResults;
-      }
-      if (page) {
-        state.page = page;
-      }
-      if (error) {
-        state.error = error;
-      }
+      state.searchResults = searchResults;
+      state.totalResults = totalResults;
+      state.page = page;
+      state.error = error;
     },
   },
 });
