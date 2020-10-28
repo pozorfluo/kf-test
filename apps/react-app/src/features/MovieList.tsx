@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface MovieSearchResultsProps {
   movies: MovieSearchResult[];
+  total: number;
+  page: number;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -43,7 +45,12 @@ export interface MovieSearchResultsProps {
  * @todo Consider whether caching requests for MovieDetails (beyond http cache)
  *       is worth researching at all.
  */
-export const MovieList = ({ movies, APIKey }: MovieSearchResultsProps) => {
+export const MovieList = ({
+  movies,
+  APIKey,
+  total,
+  page,
+}: MovieSearchResultsProps) => {
   const [popUp, setPopup] = useState(false);
   const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
   const [movieID, setMovieID] = useState<string | null>(null);
@@ -72,10 +79,11 @@ export const MovieList = ({ movies, APIKey }: MovieSearchResultsProps) => {
     <div className={classes.root}>
       <GridList cellHeight="auto" cols={1} className={classes.gridlist}>
         <ListSubheader component="div">
-          found {maybePlural(movies.length, 'movie')} !
+          found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
         </ListSubheader>
-        {movies.map((movie) => (
-          <GridListTile key={movie.imdbID}>
+        {movies.map((movie, idx) => (
+          /** @note omdbapi.com DOES return duplicate imdbID / results */
+          <GridListTile key={movie.imdbID + idx}>
             <MoviePoster url={movie.Poster} title={movie.Title} />
             <GridListTileBar
               title={movie.Title}
@@ -87,7 +95,6 @@ export const MovieList = ({ movies, APIKey }: MovieSearchResultsProps) => {
                   onClick={() => {
                     setMovieID(movie.imdbID);
                     setPopup(true);
-                    // setTimeout(() => setPhDetails(placeholderDetails), 2000);
                   }}
                 >
                   <Icon>zoom_in</Icon>

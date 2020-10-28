@@ -61,8 +61,10 @@ function isDetailsSuccess(res: OmbdAPIResponse): res is OmdbAPIDetailsSuccess {
  *
  */
 export class Omdb {
-  static buildUrl = (key: string, by: string, value: string) =>
-    `https://www.omdbapi.com/?apikey=${key}&type=movie&${by}=${value}`;
+  static buildUrl = (key: string, by: string, value: string, page?: number) =>
+    `https://www.omdbapi.com/?apikey=${key}&type=movie&${by}=${value}${
+      page ? '&page=' + page : ''
+    }`;
 
   static by = {
     ID: 'i',
@@ -123,7 +125,7 @@ export class Omdb {
     );
 
     if (isSearchSuccess(result)) {
-      return [result.Search, 1, +result.totalResults];
+      return [result.Search, +result.totalResults, 1];
       //   return result;
     } else {
       throw new Error(

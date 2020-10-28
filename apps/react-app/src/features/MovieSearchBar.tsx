@@ -42,9 +42,6 @@ export const MovieSearchBar = ({
   const { current, searchFor } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
-  //   const [err, setErr] = useState<Error | null>(null);
-
-  //   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
 
   const onSearchChanged = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentSearch(e.target.value);

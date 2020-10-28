@@ -18,7 +18,7 @@ import './app.scss';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const { current, searchResults, error } = useSelector(
+  const { current, searchResults, totalResults, page, error } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
 
@@ -52,7 +52,14 @@ export const App = () => {
   let content;
   switch (current) {
     case 'listing':
-      content = <MovieList movies={searchResults} APIKey={APIKey} />;
+      content = (
+        <MovieList
+          movies={searchResults}
+          total={totalResults}
+          page={page}
+          APIKey={APIKey}
+        />
+      );
       break;
     case 'failure':
       content = error;
