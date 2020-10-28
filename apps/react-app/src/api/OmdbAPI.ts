@@ -47,7 +47,8 @@ function isSearchSuccess(res: OmbdAPIResponse): res is OmdbAPISearchSuccess {
 }
 
 /**
- *
+ * @todo Go further with asserting completeness of MovieDetails schema or loosen
+ *       promise of getMovieDetailsAsync return type to a Partial ?
  */
 function isDetailsSuccess(res: OmbdAPIResponse): res is OmdbAPIDetailsSuccess {
   return res.Response === 'True' && 'Title' in res;

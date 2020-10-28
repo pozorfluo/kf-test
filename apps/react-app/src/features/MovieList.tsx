@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   Icon,
@@ -11,12 +11,9 @@ import {
 
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
-import { MovieDetails } from '../api';
+import { MovieDetails, Omdb } from '../api';
 import { MoviePopUp } from './MoviePopUp';
 import { MovieSearchResult } from '../api';
-// import placeholderSearchResults from './placeholderSearchResults';
-import placeholderDetails from '../api/placeholderDetails';
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,13 +34,39 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface MovieSearchResultsProps {
-    movies : MovieSearchResult[];
+  movies: MovieSearchResult[];
+  /** Part of a workaround to avoid commiting API keys to the repo. */
+  APIKey: string;
 }
 
-export const MovieList = ({movies} : MovieSearchResultsProps) => {
+/**
+ * @todo Consider whether caching requests for MovieDetails (beyond http cache)
+ *       is worth researching at all.
+ */
+export const MovieList = ({ movies, APIKey }: MovieSearchResultsProps) => {
   const [popUp, setPopup] = useState(false);
   const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
+  const [movieID, setMovieID] = useState<string | null>(null);
+  const [err, setErr] = useState<Error | null>(null);
   const classes = useStyles();
+
+  useEffect(() => {
+    async function fetchMovieDetails() {
+      try {
+        setErr(null);
+        const omdb = new Omdb(APIKey);
+        const result = await omdb.getMovieDetailsAsync(movieID);
+        console.log(result);
+        setPhDetails(result);
+      } catch (err) {
+        setErr(err);
+      }
+    }
+    if (popUp) {
+      fetchMovieDetails();
+      console.log('Loading movie details ...');
+    }
+  }, [popUp, movieID, APIKey]);
 
   return (
     <div className={classes.root}>
@@ -62,8 +85,9 @@ export const MovieList = ({movies} : MovieSearchResultsProps) => {
                   aria-label={`synopsis of ${movie.Title}`}
                   className={classes.icon}
                   onClick={() => {
+                    setMovieID(movie.imdbID);
                     setPopup(true);
-                    setTimeout(() => setPhDetails(placeholderDetails), 2000);
+                    // setTimeout(() => setPhDetails(placeholderDetails), 2000);
                   }}
                 >
                   <Icon>zoom_in</Icon>
@@ -77,9 +101,10 @@ export const MovieList = ({movies} : MovieSearchResultsProps) => {
       <MoviePopUp
         open={popUp}
         movieDetails={phDetails ? phDetails : undefined}
+        error={err ? err.message : undefined}
         onClose={() => {
           setPopup(false);
-          setPhDetails(undefined);
+          setPhDetails(null);
         }}
       />
     </div>

@@ -20,6 +20,7 @@ import { Omdb, MovieSearchResult } from '../api';
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
   showMovies: (movies: MovieSearchResult[]) => void;
+  showError: (err: string) => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -30,12 +31,15 @@ interface MovieSearchBarProps {
 export const MovieSearchBar = ({
   setMovieSearch,
   showMovies,
+  showError,
   APIKey,
 }: MovieSearchBarProps) => {
   const [currentSearch, setCurrentSearch] = useState('');
   const { current, searchFor } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
+//   const [err, setErr] = useState<Error | null>(null);
+
   //   const [movies, setMovies] = useState<MovieSearchResult[]>([]);
 
   const onSearchChanged = (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,25 +58,21 @@ export const MovieSearchBar = ({
   useEffect(() => {
     async function fetchMovies() {
       try {
+        // setErr(null);
         const omdb = new Omdb(APIKey);
-        console.log(Omdb.buildUrl(APIKey, Omdb.by.search, searchFor));
-        const searchResults = await omdb.getMoviesByTitleAsync(searchFor);
-        console.log(searchResults);
-        showMovies(searchResults);
+        const result = await omdb.getMoviesByTitleAsync(searchFor);
+        console.log(result);
+        showMovies(result);
       } catch (err) {
-        console.error(err);
-        /** @todo Fire SEARCH_FAILURE here */
+        showError(err.message);
       }
-      //   finally {
-
-      //   }
     }
     // if ((current === 'idle' || current === 'failure') && searchFor) {
     if (current === 'loading' && searchFor) {
       fetchMovies();
-      console.log('Loading ...');
+      console.log('Loading movie list ...');
     }
-  }, [searchFor, showMovies, current, APIKey]);
+  }, [searchFor, showMovies, showError, current, APIKey]);
 
   return (
     <FormControl style={{ width: '100%' }}>
@@ -97,7 +97,7 @@ export const MovieSearchBar = ({
         fullWidth
         autoFocus
       ></Input>
-      <LinearProgress />
+      {current === 'loading' && <LinearProgress />}
     </FormControl>
   );
 };

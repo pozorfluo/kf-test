@@ -11,14 +11,14 @@ import { getAPIKey } from '../utils';
 
 import { Container } from '@material-ui/core';
 import { MovieSearchBar, MovieList } from '../features';
-import { MovieSearchResult } from '../api'; 
+import { MovieSearchResult } from '../api';
 import '../web-components/img-spinner';
 
 import './app.scss';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const { current, searchResults } = useSelector(
+  const { current, searchResults, error } = useSelector(
     (state: RootState) => state.movieSearchBar
   );
 
@@ -36,19 +36,35 @@ export const App = () => {
     );
   };
 
-  // const content = current === 'listing'
-  //     ? (<MovieList />)
-  //     :
+  const showError = (err: string) => {
+    dispatch(setMovieSearchContext({ current: 'failure', error: err }));
+  };
+
+  let content;
+  switch (current) {
+    case 'listing':
+      content = <MovieList movies={searchResults} APIKey={APIKey} />;
+      break;
+    case 'failure':
+      content = error;
+      break;
+    default:
+      content = null;
+      break;
+  }
 
   return (
     <Container className="app" maxWidth="md">
       <MovieSearchBar
         setMovieSearch={setMovieSearch}
         showMovies={showMovies}
+        showError={showError}
         APIKey={APIKey}
       />
-      {/* {content} */}
-      {current === 'listing' && <MovieList movies={searchResults}/>}
+      {content}
+      {/* {current === 'listing' && (
+        <MovieList movies={searchResults} APIKey={APIKey} />
+      )} */}
     </Container>
   );
 };

@@ -16,12 +16,14 @@ export interface MovieDetailsProps {
   open: boolean;
   movieDetails?: MovieDetails;
   onClose: () => void;
+  error: string;
 }
 
 export const MoviePopUp = ({
   open,
   movieDetails,
   onClose,
+  error,
 }: MovieDetailsProps) => {
   /**
    * @todo Talk to machine/store directly once they're plugged in.
@@ -37,6 +39,8 @@ export const MoviePopUp = ({
         <p>{movieDetails.Actors}</p>
       </DialogContent>
     </>
+  ) : error ? (
+    error
   ) : (
     <CircularProgress />
   );

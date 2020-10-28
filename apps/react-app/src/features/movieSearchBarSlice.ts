@@ -11,6 +11,7 @@ interface MovieSearchContext {
   searchFor: string | null;
   searchResults: MovieSearchResult[];
   imdbID: string | null;
+  error : string | null;
 }
 
 // type MovieSearchPayload = Pick<MovieSearchContext, 'current' | 'searchResults'>;
@@ -23,6 +24,7 @@ const initialState: MovieSearchContext = {
   searchFor: null,
   searchResults: [],
   imdbID: null,
+  error : null
 };
 
 const movieSearchBarSlice = createSlice({
@@ -35,10 +37,13 @@ const movieSearchBarSlice = createSlice({
       state.current = 'loading';
     },
     setMovieSearchContext(state, action: PayloadAction<MovieSearchPayload>) {
-      const { current, searchResults = null } = action.payload;
+      const { current, searchResults = null, error = null } = action.payload;
       state.current = current;
       if (searchResults) {
         state.searchResults = searchResults;
+      }
+      if (error) {
+        state.error = error;
       }
     },
   },
