@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 
 import phMissingPoster from './ph_missing-poster.png';
@@ -30,19 +30,24 @@ export const MoviePoster = ({
   height = 450,
   width = 300,
 }: MoviePosterProps) => {
+  const [deadLink, setDeadLink] = useState<boolean>(false);
   const classes = useStyles();
+
   return (
     <img
       is="img-spinner"
       src={
-        /** @todo Consider a less crude way to check if any url, valid
-         *        or not, is present in a result returned from ombd api.
-         */
-        url.substring(0, 4) === 'http' ? url : phMissingPoster
+        /** @note omdbapi.com DOES return bogus/dead links for posters. */
+        url.substring(0, 4) === 'http' && !deadLink ? url : phMissingPoster
       }
       height={height}
       width={width}
       alt={title}
+      onError={() => {
+        if (!deadLink) {
+          setDeadLink(true);
+        }
+      }}
       /** @see {@link ../web-components/wc-class-fix.d.ts}  */
       class={classes.poster}
     />
