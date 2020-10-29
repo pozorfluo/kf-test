@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// import { AppThunk } from '../app/store';
 import { MovieSearchResult, MovieDetails } from '../api';
 import { Select } from '../utils';
 

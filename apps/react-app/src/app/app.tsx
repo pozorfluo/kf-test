@@ -8,11 +8,19 @@ import {
   setMovieSearchContext,
 } from '../features/movieSearchBarSlice';
 
+import {
+  setFetchImdbID,
+  fetchMovieDetailsAsync,
+} from '../features/movieDetailsSlice';
+
+// import { MovieSearchBar, MovieList } from '../features';
+import {MovieSearchBar} from '../features/MovieSearchBar';
+import {MovieList} from '../features/MovieList';
+
 import { getAPIKey } from '../utils';
 
 import { Container } from '@material-ui/core';
 import { Error } from '../components';
-import { MovieSearchBar, MovieList } from '../features';
 import { MovieSearchResult } from '../api';
 import '../web-components/img-spinner';
 
@@ -32,10 +40,7 @@ export const App = () => {
     console.log(`Search for "${searchFor}" fired !`);
   };
 
-  const showMovies = (
-    movies: MovieSearchResult[],
-    total: number
-  ) => {
+  const showMovies = (movies: MovieSearchResult[], total: number) => {
     dispatch(
       setMovieSearchContext({
         current: 'listing',
@@ -53,17 +58,35 @@ export const App = () => {
     dispatch(setMovieSearchContext({ current: 'failure', error: err }));
   };
 
+  const setImdbID = (imdbID: string) => {
+    dispatch(setFetchImdbID({ imdbID: imdbID }));
+  };
+
+  const fetchDetailsAsync = (imdbID: string, APIKey: string) => {
+    dispatch(fetchMovieDetailsAsync(imdbID, APIKey));
+  };
+
   let content;
   switch (current) {
     // case 'details':
-    //   <MoviePopUp .../>
-    /** @note Intentional fallthrough */
+    //   += <MoviePopUp
+    //     open={popUp}
+    //     movieDetails={movieDetails ? movieDetails : undefined}
+    //     error={error ? error : undefined}
+    //     onClose={() => {
+    //       setPopup(false);
+    //       //   setPhDetails(null);
+    //     }}
+    //   />;
+    // /** @note Intentional fallthrough */
     case 'listing':
       content = (
         <MovieList
           movies={searchResults}
           total={totalResults}
           setPage={setListPage}
+          setImdbID={setImdbID}
+          fetchDetailsAsync={fetchDetailsAsync}
           APIKey={APIKey}
         />
       );

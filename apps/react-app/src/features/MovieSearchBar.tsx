@@ -22,7 +22,6 @@ interface MovieSearchBarProps {
   showMovies: (movies: MovieSearchResult[], total: number) => void;
   showError: (err: string) => void;
   page: number;
-  //   setPage: (page: number) => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -115,7 +114,7 @@ export const MovieSearchBar = ({
         fullWidth
         autoFocus
       ></Input>
-      {current === 'loading' && <LinearProgress />}
+      {current === 'loading' && <LinearProgress style={{ height: '48px' }} />}
     </FormControl>
   );
 };

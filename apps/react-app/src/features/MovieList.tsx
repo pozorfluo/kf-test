@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../app/rootReducer';
+
+import { MovieSearchResult } from '../api';
+
+import { exitMovieDetails } from './movieDetailsSlice';
+
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -13,12 +20,10 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 
-import { MoviePagination } from '.';
+import { MoviePagination } from './MoviePagination';
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
-import { MovieDetails, Omdb } from '../api';
 import { MoviePopUp } from './MoviePopUp';
-import { MovieSearchResult } from '../api';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,6 +50,9 @@ export interface MovieSearchResultsProps {
   movies: MovieSearchResult[];
   total: number;
   setPage: (page: number) => void;
+  setImdbID: (imdbID: string) => void;
+  fetchDetailsAsync: (imdbID: string, APIKey: string) => void;
+  //   exitDetails: () => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -57,12 +65,15 @@ export const MovieList = ({
   movies,
   total,
   setPage,
+  setImdbID,
+  fetchDetailsAsync,
+  //   exitDetails,
   APIKey,
 }: MovieSearchResultsProps) => {
-  const [popUp, setPopup] = useState(false);
-  const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
-  const [movieID, setMovieID] = useState<string | null>(null);
-  const [err, setErr] = useState<Error | null>(null);
+  const dispatch = useDispatch();
+  const { current, imdbID, movieDetails, error } = useSelector(
+    (state: RootState) => state.movieDetails
+  );
 
   const classes = useStyles();
   const theme = useTheme();
@@ -72,22 +83,11 @@ export const MovieList = ({
   const cols = md ? 4 : sm ? 3 : xs ? 2 : 1;
 
   useEffect(() => {
-    async function fetchMovieDetails() {
-      try {
-        setErr(null);
-        const omdb = new Omdb(APIKey);
-        const result = await omdb.getMovieDetailsAsync(movieID);
-        console.log(result);
-        setPhDetails(result);
-      } catch (err) {
-        setErr(err);
-      }
+    if (current === 'loading' && imdbID) {
+      fetchDetailsAsync(imdbID + 'RR', APIKey);
+      console.log('Loading movie details for : ', imdbID);
     }
-    if (popUp) {
-      fetchMovieDetails();
-      console.log('Loading movie details ...');
-    }
-  }, [popUp, movieID, APIKey]);
+  }, [current, imdbID, APIKey, fetchDetailsAsync]);
 
   return (
     <div className={classes.root}>
@@ -98,13 +98,15 @@ export const MovieList = ({
         className={classes.gridList}
       >
         <GridListTile key="subheader" cols={cols}>
-        <Grid container direction="row" justify="space-between">
-          <ListSubheader component="span">
-            found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
-          </ListSubheader>
-          <MoviePagination setPage={setPage}/>
+          <Grid container direction="row" justify="space-between">
+            <ListSubheader component="span">
+              found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
+              /{current}/{imdbID}
+            </ListSubheader>
+            <MoviePagination setPage={setPage} />
           </Grid>
         </GridListTile>
+
         {movies.map((movie, idx) => (
           /** @note omdbapi.com DOES return duplicate imdbID / results */
           <GridListTile key={movie.imdbID + idx} className={classes.gridTile}>
@@ -117,8 +119,8 @@ export const MovieList = ({
                   aria-label={`synopsis of ${movie.Title}`}
                   className={classes.icon}
                   onClick={() => {
-                    setMovieID(movie.imdbID);
-                    setPopup(true);
+                    setImdbID(movie.imdbID);
+                    // dispatch(setFetchImdbID({ imdbID: movie.imdbID }));
                   }}
                 >
                   <Icon>zoom_in</Icon>
@@ -130,12 +132,11 @@ export const MovieList = ({
       </GridList>
 
       <MoviePopUp
-        open={popUp}
-        movieDetails={phDetails ? phDetails : undefined}
-        error={err ? err.message : undefined}
+        open={(current !== 'idle')}
+        movieDetails={movieDetails ? movieDetails : undefined}
+        error={error ? error : undefined}
         onClose={() => {
-          setPopup(false);
-          setPhDetails(null);
+          dispatch(exitMovieDetails());
         }}
       />
     </div>

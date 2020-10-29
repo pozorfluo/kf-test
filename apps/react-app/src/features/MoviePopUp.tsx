@@ -18,7 +18,7 @@ import { TransitionProps } from '@material-ui/core/transitions';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 
 import { MovieDetails } from '../api';
-import { MoviePoster } from '../components';
+import { MoviePoster, Error } from '../components';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -31,9 +31,9 @@ const useStyles = makeStyles(() =>
     button: {
       borderRadius: 0,
     },
-    circularProgress : {
-        margin: '5rem 0',
-    }
+    circularProgress: {
+      margin: '5rem 0',
+    },
   })
 );
 
@@ -91,7 +91,7 @@ export const MoviePopUp = ({
             justify="center"
             alignItems="center"
           >
-            <Grid container xs={12} md={5} direction="row" justify="center">
+            <Grid item xs={12} md={5} direction="row" justify="center">
               <MoviePoster
                 url={movieDetails.Poster}
                 title={movieDetails.Title}
@@ -107,10 +107,10 @@ export const MoviePopUp = ({
       </DialogContent>
     </>
   ) : error ? (
-    error
+    <Error msg={error} />
   ) : (
     <Grid container direction="row" justify="center">
-      <CircularProgress size={200} className={classes.circularProgress}/>
+      <CircularProgress size={200} className={classes.circularProgress} />
     </Grid>
   );
   return (
