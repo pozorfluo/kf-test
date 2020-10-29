@@ -12,6 +12,7 @@ import {
   Button,
   Slide,
   Grid,
+  Box,
 } from '@material-ui/core';
 
 import { TransitionProps } from '@material-ui/core/transitions';
@@ -31,6 +32,9 @@ const useStyles = makeStyles(() =>
     button: {
       borderRadius: 0,
     },
+    circularProgress : {
+        padding: '10rem',
+    }
   })
 );
 
@@ -80,29 +84,35 @@ export const MoviePopUp = ({
         </Grid>
       </DialogTitle>
       <DialogContent>
-      <div className={classes.root}>
-        <Grid
-          container
-          direction="row"
-          spacing={2}
-          justify="center"
-          alignItems="center"
-        >
-          <Grid item xs={12} md={5}>
-            <MoviePoster url={movieDetails.Poster} title={movieDetails.Title} />
+        <div className={classes.root}>
+          <Grid
+            container
+            direction="row"
+            spacing={2}
+            justify="center"
+            alignItems="center"
+          >
+            <Grid container xs={12} md={5} direction="row" justify="center">
+              <MoviePoster
+                url={movieDetails.Poster}
+                title={movieDetails.Title}
+                width="auto"
+              />
+            </Grid>
+            <Grid item xs={12} md={7}>
+              <p>{movieDetails.Plot}</p>
+              <p>{movieDetails.Actors}</p>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={7}>
-            <p>{movieDetails.Plot}</p>
-            <p>{movieDetails.Actors}</p>
-          </Grid>
-        </Grid>
-        </div>  
+        </div>
       </DialogContent>
     </>
   ) : error ? (
     error
   ) : (
-    <CircularProgress />
+    <Grid container direction="row" justify="center">
+      <CircularProgress size={200} className={classes.circularProgress}/>
+    </Grid>
   );
   return (
     <Dialog
@@ -116,6 +126,7 @@ export const MoviePopUp = ({
       onEscapeKeyDown={onClose}
       className={classes.dialog}
       maxWidth="md"
+      fullWidth
       keepMounted
     >
       {content}

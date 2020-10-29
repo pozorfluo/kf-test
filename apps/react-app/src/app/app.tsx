@@ -9,7 +9,8 @@ import {
 
 import { getAPIKey } from '../utils';
 
-import { Container } from '@material-ui/core';
+import { Container, Paper } from '@material-ui/core';
+import { Error } from '../components';
 import { MovieSearchBar, MovieList } from '../features';
 import { MovieSearchResult } from '../api';
 import '../web-components/img-spinner';
@@ -62,7 +63,7 @@ export const App = () => {
       );
       break;
     case 'failure':
-      content = error;
+      content = <Error msg={error} />;
       break;
     default:
       content = null;

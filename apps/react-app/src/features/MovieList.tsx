@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
 import {
   Icon,
   IconButton,
@@ -23,9 +26,12 @@ const useStyles = makeStyles(() =>
       justifyContent: 'space-around',
       overflow: 'hidden',
     },
-    gridlist: {
-      width: '100%',
+    gridList: {
+      //   width: '100%',
       height: '100%',
+    },
+    gridTile: {
+      backgroundColor: '#000000',
     },
     icon: {
       color: '#FFFFFFAF',
@@ -56,6 +62,12 @@ export const MovieList = ({
   const [movieID, setMovieID] = useState<string | null>(null);
   const [err, setErr] = useState<Error | null>(null);
   const classes = useStyles();
+  const theme = useTheme();
+  const md = useMediaQuery(theme.breakpoints.up('md'));
+  const sm = useMediaQuery(theme.breakpoints.up('sm'));
+  const xs = useMediaQuery('(min-width:350px)');
+
+  const cols = md ? 4 : sm ? 3 : xs ? 2 : 1;
 
   useEffect(() => {
     async function fetchMovieDetails() {
@@ -77,14 +89,24 @@ export const MovieList = ({
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight="auto" cols={1} className={classes.gridlist}>
-        <ListSubheader component="div">
-          found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
-        </ListSubheader>
+      <GridList
+        cellHeight="auto"
+        cols={cols}
+        spacing={0}
+        className={classes.gridList}
+      >
+        <GridListTile key="subheader" cols={cols}>
+          <ListSubheader component="div">
+            found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
+          </ListSubheader>
+        </GridListTile>
         {movies.map((movie, idx) => (
           /** @note omdbapi.com DOES return duplicate imdbID / results */
-          <GridListTile key={movie.imdbID + idx}>
-            <MoviePoster url={movie.Poster} title={movie.Title} />
+          <GridListTile key={movie.imdbID + idx} className={classes.gridTile}>
+            <MoviePoster
+              url={movie.Poster}
+              title={movie.Title}
+            />
             <GridListTileBar
               title={movie.Title}
               subtitle={<span>{movie.Year}</span>}

@@ -20,15 +20,15 @@ const useStyles = makeStyles(() =>
 interface MoviePosterProps {
   title: string;
   url: string;
-  height?: number;
-  width?: number;
+  height?: string;
+  width?: string;
 }
 
 export const MoviePoster = ({
   title,
   url,
-  height = 450,
-  width = 300,
+  height = 'auto',
+  width = '100%',
 }: MoviePosterProps) => {
   const [deadLink, setDeadLink] = useState<boolean>(false);
   const classes = useStyles();
