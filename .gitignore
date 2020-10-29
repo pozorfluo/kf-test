@@ -10,7 +10,7 @@ keys.env
 .env.bak
 
 # compiled output
-/dist
+# /dist
 /tmp
 /out-tsc
 

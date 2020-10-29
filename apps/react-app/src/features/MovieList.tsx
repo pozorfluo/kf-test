@@ -84,7 +84,7 @@ export const MovieList = ({
 
   useEffect(() => {
     if (current === 'loading' && imdbID) {
-      fetchDetailsAsync(imdbID + 'RR', APIKey);
+      fetchDetailsAsync(imdbID, APIKey);
       console.log('Loading movie details for : ', imdbID);
     }
   }, [current, imdbID, APIKey, fetchDetailsAsync]);
