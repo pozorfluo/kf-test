@@ -12,6 +12,7 @@ import {
   Button,
   Slide,
   Grid,
+  Typography,
 } from '@material-ui/core';
 
 import { TransitionProps } from '@material-ui/core/transitions';
@@ -58,7 +59,6 @@ const DialogPaper = (props: PaperProps) => {
  * @todo Fix : Warning: findDOMNode is deprecated in StrictMode.
  *            findDOMNode was passed an instance of Transition which is inside
  *            StrictMode.
- * @todo Talk to machine/store directly once they're plugged in.
  */
 export const MoviePopUp = ({
   open,
@@ -91,16 +91,23 @@ export const MoviePopUp = ({
             justify="center"
             alignItems="center"
           >
-            <Grid item xs={12} md={5} direction="row" justify="center">
-              <MoviePoster
-                url={movieDetails.Poster}
-                title={movieDetails.Title}
-                width="auto"
-              />
+            <Grid item xs={12} md={5}>
+              {/* @note This is ugly but Box/Grid was very stubborn */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <MoviePoster
+                  url={movieDetails.Poster}
+                  title={movieDetails.Title}
+                  width="auto"
+                />
+              </div>
             </Grid>
             <Grid item xs={12} md={7}>
-              <p>{movieDetails.Plot}</p>
-              <p>{movieDetails.Actors}</p>
+              <Typography variant="subtitle1" paragraph>
+                {movieDetails.Plot}
+              </Typography>
+              <Typography variant="caption">
+                starring : <i>{movieDetails.Actors}</i>
+              </Typography>
             </Grid>
           </Grid>
         </div>

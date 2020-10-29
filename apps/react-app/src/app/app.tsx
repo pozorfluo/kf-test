@@ -13,7 +13,6 @@ import {
   fetchMovieDetailsAsync,
 } from '../features/movieDetailsSlice';
 
-// import { MovieSearchBar, MovieList } from '../features';
 import {MovieSearchBar} from '../features/MovieSearchBar';
 import {MovieList} from '../features/MovieList';
 
@@ -68,17 +67,6 @@ export const App = () => {
 
   let content;
   switch (current) {
-    // case 'details':
-    //   += <MoviePopUp
-    //     open={popUp}
-    //     movieDetails={movieDetails ? movieDetails : undefined}
-    //     error={error ? error : undefined}
-    //     onClose={() => {
-    //       setPopup(false);
-    //       //   setPhDetails(null);
-    //     }}
-    //   />;
-    // /** @note Intentional fallthrough */
     case 'listing':
       content = (
         <MovieList
