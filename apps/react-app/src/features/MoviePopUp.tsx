@@ -33,7 +33,7 @@ const useStyles = makeStyles(() =>
       borderRadius: 0,
     },
     circularProgress : {
-        padding: '10rem',
+        margin: '5rem 0',
     }
   })
 );
