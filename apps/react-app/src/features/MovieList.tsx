@@ -6,12 +6,14 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
   Icon,
   IconButton,
+  Grid,
   GridList,
   GridListTile,
   GridListTileBar,
   ListSubheader,
 } from '@material-ui/core';
 
+import { MoviePagination } from '.';
 import { MoviePoster } from '../components';
 import { maybePlural } from '../utils';
 import { MovieDetails, Omdb } from '../api';
@@ -42,7 +44,7 @@ const useStyles = makeStyles(() =>
 export interface MovieSearchResultsProps {
   movies: MovieSearchResult[];
   total: number;
-  page: number;
+  setPage: (page: number) => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -53,20 +55,20 @@ export interface MovieSearchResultsProps {
  */
 export const MovieList = ({
   movies,
-  APIKey,
   total,
-  page,
+  setPage,
+  APIKey,
 }: MovieSearchResultsProps) => {
   const [popUp, setPopup] = useState(false);
   const [phDetails, setPhDetails] = useState<MovieDetails | null>(null);
   const [movieID, setMovieID] = useState<string | null>(null);
   const [err, setErr] = useState<Error | null>(null);
+
   const classes = useStyles();
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.up('md'));
   const sm = useMediaQuery(theme.breakpoints.up('sm'));
   const xs = useMediaQuery('(min-width:350px)');
-
   const cols = md ? 4 : sm ? 3 : xs ? 2 : 1;
 
   useEffect(() => {
@@ -96,17 +98,17 @@ export const MovieList = ({
         className={classes.gridList}
       >
         <GridListTile key="subheader" cols={cols}>
-          <ListSubheader component="div">
+        <Grid container direction="row" justify="space-between">
+          <ListSubheader component="span">
             found {maybePlural(total, 'movie')} ! ( showing {movies.length} )
           </ListSubheader>
+          <MoviePagination setPage={setPage}/>
+          </Grid>
         </GridListTile>
         {movies.map((movie, idx) => (
           /** @note omdbapi.com DOES return duplicate imdbID / results */
           <GridListTile key={movie.imdbID + idx} className={classes.gridTile}>
-            <MoviePoster
-              url={movie.Poster}
-              title={movie.Title}
-            />
+            <MoviePoster url={movie.Poster} title={movie.Title} />
             <GridListTileBar
               title={movie.Title}
               subtitle={<span>{movie.Year}</span>}

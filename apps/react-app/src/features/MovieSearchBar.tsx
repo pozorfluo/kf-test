@@ -19,12 +19,10 @@ import { Omdb, MovieSearchResult } from '../api';
  */
 interface MovieSearchBarProps {
   setMovieSearch: (searchFor: string) => void;
-  showMovies: (
-    movies: MovieSearchResult[],
-    total: number,
-    page: number
-  ) => void;
+  showMovies: (movies: MovieSearchResult[], total: number) => void;
   showError: (err: string) => void;
+  page: number;
+  //   setPage: (page: number) => void;
   /** Part of a workaround to avoid commiting API keys to the repo. */
   APIKey: string;
 }
@@ -36,6 +34,7 @@ export const MovieSearchBar = ({
   setMovieSearch,
   showMovies,
   showError,
+  page,
   APIKey,
 }: MovieSearchBarProps) => {
   const [currentSearch, setCurrentSearch] = useState('');
@@ -68,11 +67,12 @@ export const MovieSearchBar = ({
     async function fetchMovies() {
       try {
         const omdb = new Omdb(APIKey);
-        const [results, total, page] = await omdb.getMoviesByTitleAsync(
-          searchFor
+        const [results, total, resultsPage] = await omdb.getMoviesByTitleAsync(
+          searchFor,
+          page
         );
-        console.log(results, total, page);
-        showMovies(results, total, page);
+        console.log(results, total, resultsPage);
+        showMovies(results, total);
       } catch (err) {
         showError(err.message);
       }
@@ -81,7 +81,7 @@ export const MovieSearchBar = ({
       fetchMovies();
       console.log('Loading movie list ...');
     }
-  }, [searchFor, showMovies, showError, current, APIKey]);
+  }, [searchFor, showMovies, showError, current, page, APIKey]);
 
   return (
     <FormControl style={{ width: '100%' }}>

@@ -116,11 +116,12 @@ export class Omdb {
    */
   async getMoviesByTitleAsync(
     searchFor: string,
+    page: number,
     controller?: AbortController
   ): Promise<[MovieSearchResult[], number, number]> {
     //   ): Promise<OmdbAPISearchSuccess> {
     const result = await this._request(
-      Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor),
+      Omdb.buildUrl(this._APIKey, Omdb.by.search, searchFor, page),
       controller
     );
 

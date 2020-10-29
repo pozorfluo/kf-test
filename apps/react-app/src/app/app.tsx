@@ -4,12 +4,13 @@ import { RootState } from './rootReducer';
 
 import {
   searchMovies,
+  setPage,
   setMovieSearchContext,
 } from '../features/movieSearchBarSlice';
 
 import { getAPIKey } from '../utils';
 
-import { Container, Paper } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import { Error } from '../components';
 import { MovieSearchBar, MovieList } from '../features';
 import { MovieSearchResult } from '../api';
@@ -33,17 +34,19 @@ export const App = () => {
 
   const showMovies = (
     movies: MovieSearchResult[],
-    total: number,
-    page: number
+    total: number
   ) => {
     dispatch(
       setMovieSearchContext({
         current: 'listing',
         searchResults: movies,
         totalResults: total,
-        page: page,
       })
     );
+  };
+
+  const setListPage = (page: number) => {
+    dispatch(setPage(page));
   };
 
   const showError = (err: string) => {
@@ -52,12 +55,15 @@ export const App = () => {
 
   let content;
   switch (current) {
+    // case 'details':
+    //   <MoviePopUp .../>
+    /** @note Intentional fallthrough */
     case 'listing':
       content = (
         <MovieList
           movies={searchResults}
           total={totalResults}
-          page={page}
+          setPage={setListPage}
           APIKey={APIKey}
         />
       );
@@ -76,12 +82,10 @@ export const App = () => {
         setMovieSearch={setMovieSearch}
         showMovies={showMovies}
         showError={showError}
+        page={page}
         APIKey={APIKey}
       />
       {content}
-      {/* {current === 'listing' && (
-        <MovieList movies={searchResults} APIKey={APIKey} />
-      )} */}
     </Container>
   );
 };

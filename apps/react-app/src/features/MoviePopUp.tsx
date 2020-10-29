@@ -12,7 +12,6 @@ import {
   Button,
   Slide,
   Grid,
-  Box,
 } from '@material-ui/core';
 
 import { TransitionProps } from '@material-ui/core/transitions';

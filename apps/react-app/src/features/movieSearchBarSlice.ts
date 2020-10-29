@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MovieSearchResult } from '../api'; // , MovieDetails
+import { MovieSearchResult, MovieDetails } from '../api';
 import { Select } from '../utils';
 
 /**
@@ -11,8 +11,9 @@ interface MovieSearchContext {
   searchFor: string | null;
   searchResults: MovieSearchResult[];
   totalResults: number | null;
-  page: number | null;
+  page: number;
   imdbID: string | null;
+  movieDetails: MovieDetails | null;
   error: string | null;
 }
 
@@ -21,13 +22,16 @@ type MovieSearchPayload = Select<MovieSearchContext, 'current'>;
 
 type CurrentSearch = Pick<MovieSearchContext, 'searchFor'>;
 
+// type DisplayDetailsPayload =  Pick<MovieSearchContext, 'movieDetails'>;
+
 const initialState: MovieSearchContext = {
   current: 'idle',
   searchFor: null,
   searchResults: [],
   totalResults: null,
-  page: null,
+  page: 1,
   imdbID: null,
+  movieDetails: null,
   error: null,
 };
 
@@ -38,8 +42,20 @@ const movieSearchBarSlice = createSlice({
     searchMovies(state, action: PayloadAction<CurrentSearch>) {
       const { searchFor } = action.payload;
       state.searchFor = searchFor;
+      state.page = 1;
+      state.totalResults = null;
       state.current = 'loading';
     },
+
+    // displayDetails(state, action: PayloadAction<DisplayDetailsPayload>) {
+
+    // },
+
+    setPage(state, action: PayloadAction<number>) {
+      state.current = 'loading';
+      state.page = action.payload;
+    },
+
     setMovieSearchContext(state, action: PayloadAction<MovieSearchPayload>) {
       const {
         current,
@@ -51,7 +67,9 @@ const movieSearchBarSlice = createSlice({
       state.current = current;
       state.searchResults = searchResults;
       state.totalResults = totalResults;
-      state.page = page;
+      if (page) {
+        state.page = page;
+      }
       state.error = error;
     },
   },
@@ -60,6 +78,7 @@ const movieSearchBarSlice = createSlice({
 export const {
   searchMovies,
   setMovieSearchContext,
+  setPage,
 } = movieSearchBarSlice.actions;
 
 export default movieSearchBarSlice.reducer;

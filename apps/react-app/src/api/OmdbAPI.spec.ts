@@ -45,6 +45,7 @@ describe('Omdb', () => {
     };
 
     const mockFailure = { Response: 'False', Error: 'Invalid API key!' };
+    const page = 1;
 
     beforeEach(() => {
       omdb = new Omdb('TestApiKey');
@@ -62,11 +63,13 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect(await omdb.getMoviesByTitleAsync('TestMovie')).toEqual(
-        [mockSearchResult.Search, 1, 1]
-      );
+      expect(await omdb.getMoviesByTitleAsync('TestMovie', page)).toEqual([
+        mockSearchResult.Search,
+        1,
+        1,
+      ]);
       expect(omdb._fetch).toHaveBeenCalledWith(
-        'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
+        `https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie&page=${page}`,
         {}
       );
     });
@@ -86,12 +89,13 @@ describe('Omdb', () => {
 
       expect.assertions(2);
       expect(async () => {
-        await omdb.getMoviesByTitleAsync('TestMovie');
+        await omdb.getMoviesByTitleAsync('TestMovie', page);
       }).rejects.toThrowError(
         new Error('Error 401 Unauthorized : Invalid API key!')
       );
       expect(omdb._fetch).toHaveBeenCalledWith(
-        'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
+        `https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie&page=${page}`,
+
         {}
       );
     });
@@ -109,17 +113,16 @@ describe('Omdb', () => {
           () => Promise.resolve(mockResponse) as Promise<Response>
         );
 
-      expect.assertions(2);
-
       const controller = new AbortController();
-      expect(await omdb.getMoviesByTitleAsync('TestMovie', controller)).toEqual(
-        [mockSearchResult.Search, 1, 1]
-      );
 
+      expect.assertions(2);
       expect(
-        omdb._fetch
-      ).toHaveBeenCalledWith(
-        'https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie',
+        await omdb.getMoviesByTitleAsync('TestMovie', page, controller)
+      ).toEqual([mockSearchResult.Search, 1, page]);
+
+      expect(omdb._fetch).toHaveBeenCalledWith(
+        `https://www.omdbapi.com/?apikey=TestApiKey&type=movie&s=TestMovie&page=${page}`,
+
         { signal: controller.signal }
       );
     });
